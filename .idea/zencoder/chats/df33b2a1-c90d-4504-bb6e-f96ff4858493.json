@@ -1,0 +1,100 @@
+{
+    "checksum": "28d09cc01ce77fed42c9f8f9e614445b283be582d1e25a2920685b3708a87f31",
+    "data": {
+    "id": "df33b2a1-c90d-4504-bb6e-f96ff4858493",
+    "createdAt": 1752752891828,
+    "updatedAt": 1752752893012,
+    "title": "/fix CreateWalletResponse.builder()            ...",
+    "messages": [
+        {
+            "id": "b22c1e4d-663f-4da3-bd37-a8734b9c4abb",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "CreateWalletResponse.builder()\n                .message(\"Wallet created successfully\")\n                .accountNumber(wallet.getAccountNumber())\n                .walletCurrency(wallet.getCurrencyType())\n                .walletType",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "'walletCurrency(WalletCurrency)' in 'com.glasswallet.Wallet.dtos.response.CreateWalletResponse.CreateWalletResponseBuilder' cannot be applied to '(com.glasswallet.Wallet.enums.WalletCurrency)'"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/Wallet/service/implementation/WalletServiceImpl.java",
+                    "content": "package com.glasswallet.Wallet.service.implementation;\n\nimport com.glasswallet.Wallet.data.model.Wallet;\nimport com.glasswallet.Wallet.data.repositories.WalletRepository;\nimport com.glasswallet.Wallet.dtos.requests.CreateWalletRequest;\nimport com.glasswallet.Wallet.dtos.response.CreateWalletResponse;\nimport com.glasswallet.Wallet.dtos.response.WalletBalanceResponse;\nimport com.glasswallet.Wallet.enums.WalletCurrency;\nimport com.glasswallet.Wallet.enums.WalletStatus;\nimport com.glasswallet.Wallet.enums.WalletType;\nimport com.glasswallet.Wallet.exceptions.InsufficientBalanceException;\nimport com.glasswallet.Wallet.exceptions.InvalidCredentialsException;\nimport com.glasswallet.Wallet.exceptions.WalletNotFoundException;\nimport com.glasswallet.Wallet.service.interfaces.WalletResolver;\nimport com.glasswallet.Wallet.service.interfaces.WalletService;\nimport com.glasswallet.Wallet.utils.PaymentResult;\nimport com.glasswallet.Wallet.utils.WalletUtils;\nimport com.glasswallet.security.JwtUtil;\nimport com.glasswallet.transaction.services.interfaces.SuiRateService;\nimport com.glasswallet.user.data.models.User;\nimport com.glasswallet.user.data.repositories.UserRepository;\nimport com.glasswallet.user.exceptions.UserNotFoundException;\n\nimport lombok.extern.slf4j.Slf4j;\nimport org.springframework.security.crypto.password.PasswordEncoder;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.math.BigDecimal;\nimport java.math.RoundingMode;\nimport java.util.List;\nimport java.util.UUID;\n\n@Slf4j\n@Service\npublic class WalletServiceImpl implements WalletService {\n\n    private final UserRepository userRepository;\n    private final WalletRepository walletRepository;\n    private final JwtUtil jwtUtil;\n    private final SuiRateService suiRateService;\n    private final WalletResolver walletResolver;\n    private final PasswordEncoder passwordEncoder;\n\n    public WalletServiceImpl(UserRepository userRepository,\n                             WalletRepository walletRepository,\n                             JwtUtil jwtUtil,\n                             SuiRateService suiRateService,\n                             WalletResolver walletResolver,\n                             PasswordEncoder passwordEncoder) {\n        this.userRepository = userRepository;\n        this.walletRepository = walletRepository;\n        this.jwtUtil = jwtUtil;\n        this.suiRateService = suiRateService;\n        this.walletResolver = walletResolver;\n        this.passwordEncoder = passwordEncoder;\n    }\n\n    @Override\n    public CreateWalletResponse createWalletForUser(String jwtToken, CreateWalletRequest createWalletRequest) {\n        UUID userId = UUID.fromString(jwtUtil.extractUserId(jwtToken));\n        User user = userRepository.findById(userId)\n                .orElseThrow(() -> new UserNotFoundException(\"User not found\"));\n\n        createWalletIfNotExists(user);\n\n        WalletCurrency currency = WalletUtils.resolveCurrencyFromPhoneNumber(user.getPhoneNumber());\n        Wallet wallet = walletRepository.findByUserAndCurrencyType(user, currency)\n                .orElseThrow(() -> new WalletNotFoundException(\"Wallet not found\"));\n\n        return mapToCreateWalletResponse(wallet);\n    }\n\n    @Override\n    public void createWalletIfNotExists(User user) {\n        if (!walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.NGN)) {\n            log.info(\"Creating FIAT wallet for user: {}\", user.getEmail());\n            createFiatWallet(user);\n        }\n\n        if (!walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.SUI)) {\n            log.info(\"Creating CRYPTO wallet for user: {}\", user.getEmail());\n            createSuiWallet(user);\n        }\n    }\n\n    @Override\n    public CreateWalletResponse createWallet(User user) {\n        createWalletIfNotExists(user);\n        Wallet fiatWallet = walletRepository.findByUserAndCurrencyType(user, WalletCurrency.NGN)\n                .orElseThrow(() -> new WalletNotFoundException(\"Fiat wallet not found after creation\"));\n        return mapToCreateWalletResponse(fiatWallet);\n    }\n\n    @Override\n    public void depositFiat(String recipientIdentifier, BigDecimal amount) {\n        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)\n                .orElseThrow(() -> new WalletNotFoundException(\"Fiat wallet not found\"));\n        wallet.setBalance(wallet.getBalance().add(amount));\n        walletRepository.save(wallet);\n    }\n\n    @Override\n    public void depositSui(String recipientIdentifier, BigDecimal amount) {\n        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)\n                .orElseThrow(() -> new WalletNotFoundException(\"SUI wallet not found\"));\n        wallet.setBalance(wallet.getBalance().add(amount));\n        walletRepository.save(wallet);\n    }\n\n    @Override\n    public void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) {\n        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)\n                .orElseThrow(() -> new WalletNotFoundException(\"Fiat wallet not found\"));\n        verifyPassword(wallet.getUser(), password);\n\n        if (wallet.getBalance().compareTo(amount) < 0) {\n            throw new InsufficientBalanceException(\"Insufficient fiat balance\");\n        }\n\n        wallet.setBalance(wallet.getBalance().subtract(amount));\n        walletRepository.save(wallet);\n    }\n\n    @Override\n    public void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) {\n        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)\n                .orElseThrow(() -> new WalletNotFoundException(\"SUI wallet not found\"));\n        verifyPassword(wallet.getUser(), password);\n\n        if (wallet.getBalance().compareTo(amount) < 0) {\n            throw new InsufficientBalanceException(\"Insufficient SUI balance\");\n        }\n\n        wallet.setBalance(wallet.getBalance().subtract(amount));\n        walletRepository.save(wallet);\n    }\n\n    @Override\n    public WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) {\n        Wallet fiat = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)\n                .orElseThrow(() -> new WalletNotFoundException(\"Fiat wallet not found\"));\n        Wallet sui = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)\n                .orElseThrow(() -> new WalletNotFoundException(\"SUI wallet not found\"));\n\n        verifyPassword(fiat.getUser(), password);\n        BigDecimal exchangeRate = suiRateService.getSuiToNgnRate();\n\n        return WalletBalanceResponse.builder()\n                .fiatBalance(fiat.getBalance())\n                .fiatCurrency(\"NGN\")\n                .fiatEquivalentOfSui(fiat.getBalance().divide(exchangeRate, 2, RoundingMode.HALF_UP))\n                .suiBalance(sui.getBalance())\n                .suiToken(\"SUI\")\n                .suiEquivalentOfFiat(sui.getBalance().multiply(exchangeRate))\n                .suiToNgnRate(exchangeRate)\n                .build();\n    }\n\n    @Override\n    public List<Wallet> getWallets(UUID userId) {\n        User user = userRepository.findById(userId)\n                .orElseThrow(() -> new UserNotFoundException(\"User not found\"));\n        return walletRepository.findByUser(user);\n    }\n\n    @Transactional\n    @Override\n    public PaymentResult receivePayment(String recipientIdentifier, WalletCurrency currency, BigDecimal amount) {\n        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {\n            throw new IllegalArgumentException(\"Amount must be greater than zero\");\n        }\n\n        Wallet recipientWallet = walletResolver.resolveWallet(recipientIdentifier, currency)\n                .orElseThrow(() -> new WalletNotFoundException(\"Recipient wallet not found\"));\n\n        if (recipientWallet.getStatus() != WalletStatus.ACTIVE) {\n            throw new IllegalStateException(\"Recipient wallet is inactive\");\n        }\n\n        recipientWallet.setBalance(recipientWallet.getBalance().add(amount));\n        walletRepository.save(recipientWallet);\n\n        return new PaymentResult(\n                recipientWallet.getUser().getId(),\n                recipientWallet.getCurrencyType(),\n                amount\n        );\n    }\n\n    private Wallet createFiatWallet(User user) {\n        Wallet wallet = new Wallet();\n        wallet.setUser(user);\n        wallet.setWalletType(WalletType.FIAT);\n        wallet.setCurrencyType(WalletCurrency.NGN);\n        wallet.setAccountNumber(WalletUtils.generateAccountNumberFromPhoneNumber(user.getPhoneNumber()));\n        wallet.setBalance(BigDecimal.ZERO);\n        wallet.setStatus(WalletStatus.ACTIVE);\n        return walletRepository.save(wallet);\n    }\n\n    private Wallet createSuiWallet(User user) {\n        Wallet wallet = new Wallet();\n        wallet.setUser(user);\n        wallet.setWalletType(WalletType.CRYPTO);\n        wallet.setCurrencyType(WalletCurrency.SUI);\n        wallet.setWalletAddress(\"sui_\" + UUID.randomUUID().toString().replace(\"-\", \"\").substring(0, 32));\n        wallet.setTokenSymbol(\"SUI\");\n        wallet.setBalance(BigDecimal.ZERO);\n        wallet.setStatus(WalletStatus.ACTIVE);\n        return walletRepository.save(wallet);\n    }\n\n    private void verifyPassword(User user, String rawPassword) throws InvalidCredentialsException {\n        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {\n            throw new InvalidCredentialsException(\"Invalid password\");\n        }\n    }\n\n    private CreateWalletResponse mapToCreateWalletResponse(Wallet wallet) {\n        return CreateWalletResponse.builder()\n                .message(\"Wallet created successfully\")\n                .accountNumber(wallet.getAccountNumber())\n                .walletCurrency(wallet.getCurrencyType())\n                .walletType(wallet.getWalletType())\n                .walletStatus(wallet.getStatus())\n                .balance(wallet.getBalance())\n                .build();\n    }\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752752891829,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "CreateWalletResponse.builder()\n                .message(\"Wallet created successfully\")\n                .accountNumber(wallet.getAccountNumber())\n                .walletCurrency(wallet.getCurrencyType())\n                .walletType"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "'walletCurrency(WalletCurrency)' in 'com.glasswallet.Wallet.dtos.response.CreateWalletResponse.CreateWalletResponseBuilder' cannot be applied to '(com.glasswallet.Wallet.enums.WalletCurrency)'"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "f02c3b8a-71dd-4458-9073-e24529483f19",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 17 at 16:00.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 11547
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752752893011,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}
