@@ -1,0 +1,100 @@
+{
+    "checksum": "ffd53540e4ade5db83e23b37534e141b3f6d2e23c61aeb5885f551393dfcb4ec",
+    "data": {
+    "id": "0ac2625e-63b8-4a70-b570-0f941110a568",
+    "createdAt": 1752786710782,
+    "updatedAt": 1752786714340,
+    "title": "/fix GlassUser.builder()                 .id(us...",
+    "messages": [
+        {
+            "id": "8ad04296-3f29-4e20-b5ae-b0a13482e3ec",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "GlassUser.builder()\n                .id(user.getId())",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "Cannot resolve method 'id' in 'GlassUserBuilder'"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                    "content": "package com.glasswallet.user.services.implementations;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport com.glasswallet.platform.service.PlatformUserService;\nimport com.glasswallet.user.data.models.User;\nimport com.glasswallet.user.dtos.requests.GlassUser;\nimport com.glasswallet.user.services.interfaces.CompanyIdentityMapper;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.stereotype.Service;\n\n@Service\n@RequiredArgsConstructor\npublic class CompanyIdentityMapperImpl implements CompanyIdentityMapper {\n    private final PlatformUserService platformUserService;\n\n    @Override\n    public GlassUser map(PlatformUser platformUser) {\n        User user = platformUserService.getUserByPlatformUserId(\n                platformUser.getCompanyId(), platformUser.getCompanyUserId());\n\n        return GlassUser.builder()\n                .id(user.getId())\n                .email(user.getEmail())\n                .firstName(user.getFirstName())\n                .lastName(user.getLastName())\n                .role(user.getRole())\n                .companyId(platformUser.getCompanyId())\n                .companyUserId(platformUser.getCompanyUserId())\n                .build();\n    }\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752786710804,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "GlassUser.builder()\n                .id(user.getId())"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "Cannot resolve method 'id' in 'GlassUserBuilder'"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "a786e064-326c-4fc3-9a19-352764999394",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 18 at 16:21.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 65395
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752786714340,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}

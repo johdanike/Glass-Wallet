@@ -14,12 +14,12 @@ import java.util.Optional;
 @Service
 public class WalletResolverImpl implements WalletResolver {
 
-    private final WalletRepository walletRepository;
     private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
 
-    public WalletResolverImpl(WalletRepository walletRepository, UserRepository userRepository) {
-        this.walletRepository = walletRepository;
+    public WalletResolverImpl(UserRepository userRepository, WalletRepository walletRepository) {
         this.userRepository = userRepository;
+        this.walletRepository = walletRepository;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class WalletResolverImpl implements WalletResolver {
         if (wallet.isPresent()) return wallet;
 
         // 3. Try user email/username
-        Optional<User> user = userRepository.findByEmailOrUsername(identifier, identifier);
+        Optional<User> user = userRepository.findByEmailOrUsernameOrAccountNumber(identifier, identifier, identifier);
         if (user.isPresent()) {
             wallet = walletRepository.findByUserAndCurrencyType(user.get(), currencyType);
             if (wallet.isPresent()) return wallet;

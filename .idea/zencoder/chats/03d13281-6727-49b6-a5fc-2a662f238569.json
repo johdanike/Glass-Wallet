@@ -1,0 +1,100 @@
+{
+    "checksum": "a5192aeb471ab8712fe9d48ebdde016b8f1c5272fa4b1fe13bce3a7e7915f1e5",
+    "data": {
+    "id": "03d13281-6727-49b6-a5fc-2a662f238569",
+    "createdAt": 1752827152984,
+    "updatedAt": 1752827154095,
+    "title": "/fix private final PlatformUserService platform...",
+    "messages": [
+        {
+            "id": "36d116b4-734f-4de4-9bf4-04f74536373f",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "private final PlatformUserService platformUserService;",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "Could not autowire. No beans of 'PlatformUserService' type found."
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                    "content": "package com.glasswallet.user.services.implementations;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport com.glasswallet.platform.service.PlatformUserService;\nimport com.glasswallet.user.data.models.User;\nimport com.glasswallet.user.dtos.requests.GlassUser;\nimport com.glasswallet.user.services.interfaces.CompanyIdentityMapper;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.stereotype.Service;\n\n@Service\n@RequiredArgsConstructor\npublic class CompanyIdentityMapperImpl implements CompanyIdentityMapper {\n    private final PlatformUserService platformUserService;\n\n    public GlassUser map(PlatformUser platformUser) {\n        User user = platformUserService.getUserByPlatformUserId(\n                platformUser.getCompanyId(), platformUser.getCompanyUserId()\n        );\n\n        return GlassUser.builder()\n                .id(user.getId())\n                .companyId(Long.valueOf(platformUser.getCompanyId()))\n                .companyUserId(Long.valueOf(platformUser.getCompanyUserId()))\n                .build();\n    }\n\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752827152997,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "private final PlatformUserService platformUserService;"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "Could not autowire. No beans of 'PlatformUserService' type found."
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "6c87e45b-6940-4683-9abd-e03b88c04fc9",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 18 at 16:21.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 24956
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752827154095,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}
