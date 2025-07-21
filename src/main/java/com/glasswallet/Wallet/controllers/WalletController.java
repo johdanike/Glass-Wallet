@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/wallets")
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class WalletController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody CreateWalletRequest request) {
         String token = authHeader.replace("Bearer ", "");
-        CreateWalletResponse response = walletService.createWalletForUser(token, request);
+        CreateWalletResponse response = walletService.createWalletForUser(UUID.fromString(token), request);
         return ResponseEntity.ok(response);
     }
 }

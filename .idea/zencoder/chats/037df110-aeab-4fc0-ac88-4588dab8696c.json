@@ -1,0 +1,100 @@
+{
+    "checksum": "5b793c4ea766374787f6eadf21498dd4978d785b11a8e25dc7866d7bb872ec9c",
+    "data": {
+    "id": "037df110-aeab-4fc0-ac88-4588dab8696c",
+    "createdAt": 1752839293004,
+    "updatedAt": 1752839294004,
+    "title": "/fix        ',' or ';' expected",
+    "messages": [
+        {
+            "id": "56a309d6-810b-444b-9a3a-df3f7896aa86",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "\n\n    ",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "',' or ';' expected"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\data\\models\\TransactionType.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/transaction/data/models/TransactionType.java",
+                    "content": "package com.glasswallet.transaction.data.models;\n\npublic enum TransactionType {\n    DEPOSIT(\"deposit\"),\n    WITHDRAWAL(\"withdrawal\"),\n    TRANSFER(\"transfer\")\n\n    private final String type;\n\n    TransactionType(String type) {\n        this.type = type;\n    }\n\n    public String getType() {\n        return type;\n    }\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752839293013,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "\n\n    "
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "',' or ';' expected"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "59f1293c-0f89-4519-bc49-eab57c85fcc7",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 18 at 16:21.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 12816
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752839294003,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}

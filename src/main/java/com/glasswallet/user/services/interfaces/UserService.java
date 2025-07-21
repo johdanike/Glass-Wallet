@@ -6,6 +6,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface UserService {
-
-    LoginResponse generateLoginResponse(User user, String message);
+        User findOrCreate(String platformId, String platformUserId);
 }

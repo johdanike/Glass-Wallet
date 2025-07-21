@@ -1,0 +1,578 @@
+{
+    "checksum": "4dbd78b58e936363c2cbbac4264045b6f3ff71dedbeb461e160a346c53f829b2",
+    "data": {
+    "id": "85582786-e933-47bc-a888-c0c869ceafad",
+    "createdAt": 1752819786624,
+    "updatedAt": 1752819802770,
+    "title": "JWT Token Verification Tips",
+    "messages": [
+        {
+            "id": "ff784215-c934-4d87-a1f9-55c3a03eb455",
+            "role": "user",
+            "content": [
+                {
+                    "type": "codeSnippet",
+                    "text": "package com.glasswallet.security;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport com.glasswallet.user.data.models.User;\nimport io.jsonwebtoken.Jwts;\nimport org.springframework.stereotype.Component;\n\nimport javax.crypto.SecretKey;\n\n@Component\npublic class EnumTokenVerifier {\n\n    private final SecretKey secretKey;\n\n    public EnumTokenVerifier(SecretKey secretKey) {\n        this.secretKey = secretKey;\n    }\n\n    public PlatformUser verifyAndExtractUser(String token) {\n        return (PlatformUser) Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);\n    }\n\n    public PlatformUser extractUser(String token){\n        PlatformUser platformUser = Jwts.parserBuilder()\n                .setSigningKey(secretKey)\n                .build()\n                .parseClaimsJws(token)\n                .getBody();\n        return platformUser;\n    }\n}\n\nhow correct is this implementation to verify token coming from the parent app\n"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                    "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                    "sources": [
+                        "opened_tab"
+                    ],
+                    "content": "package com.glasswallet.security;\r\n\r\nimport org.springframework.stereotype.Component;\r\n\r\n@Component\r\npublic class EnumTokenVerifier {\r\n    \r\n}\r\n"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/controllers/WalletController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\controllers\\WalletController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenIdentityMapper.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/CompanyIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\CompanyIdentityMapper.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/controller/PlatformUserController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\controller\\PlatformUserController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/repositories/PlatformUserRepository.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\repositories\\PlatformUserRepository.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/service/PlatformUserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\service\\PlatformUserService.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\JwtUtil.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\JwtUtil.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\JwtTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\JwtTokenFilter.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\AuthServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\AuthServiceImpl.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\RefreshTokenService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\RefreshTokenService.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "pom.xml",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\pom.xml",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": ".github\\workflows\\build.yml",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\.github\\workflows\\build.yml",
+                        "sources": []
+                    },
+                    {
+                        "path": ".gitignore",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\SecurityConfig.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\SecurityConfig.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/UserServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\UserServiceImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/UserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\UserService.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenIdentityMapper.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/CompanyUserMapping.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\CompanyUserMapping.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/requests/GlassUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\requests\\GlassUser.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/CompanyIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\CompanyIdentityMapper.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletResolverImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletResolverImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/service/PlatformUserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\service\\PlatformUserService.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java"
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java"
+                    }
+                ],
+                "usedFilePaths": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "opened_tab"
+                        ],
+                        "content": "package com.glasswallet.security;\r\n\r\nimport org.springframework.stereotype.Component;\r\n\r\n@Component\r\npublic class EnumTokenVerifier {\r\n    \r\n}\r\n"
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java"
+                    }
+                ]
+            },
+            "createdAt": 1752819786646,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "codeBlock",
+                        "attrs": {
+                            "language": null
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "package com.glasswallet.security;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport com.glasswallet.user.data.models.User;\nimport io.jsonwebtoken.Jwts;\nimport org.springframework.stereotype.Component;\n\nimport javax.crypto.SecretKey;\n\n@Component\npublic class EnumTokenVerifier {\n\n    private final SecretKey secretKey;\n\n    public EnumTokenVerifier(SecretKey secretKey) {\n        this.secretKey = secretKey;\n    }\n\n    public PlatformUser verifyAndExtractUser(String token) {\n        return (PlatformUser) Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);\n    }\n\n    public PlatformUser extractUser(String token){\n        PlatformUser platformUser = Jwts.parserBuilder()\n                .setSigningKey(secretKey)\n                .build()\n                .parseClaimsJws(token)\n                .getBody();\n        return platformUser;\n    }\n}\n\nhow correct is this implementation to verify token coming from the parent app\n"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "97495c27-5006-4261-b3a0-84d0ef4e248c",
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The implementation of the `EnumTokenVerifier` class you provided is mostly correct for verifying and extracting a user from a JWT token. However, there are a few points to consider for improvement and correctness:\n\n1. **Return Type of `verifyAndExtractUser` Method**:\n   - The method `verifyAndExtractUser` is currently returning a `PlatformUser` directly from `parseClaimsJws(token)`. However, `parseClaimsJws(token)` returns a `Jws<Claims>` object, not a `PlatformUser`. You need to extract the claims and then map them to a `PlatformUser` object.\n\n2. **Return Type of `extractUser` Method**:\n   - Similar to the above, the `extractUser` method is attempting to return a `PlatformUser` directly from `getBody()`, which returns `Claims`. You need to map these claims to a `PlatformUser`.\n\n3. **Error Handling**:\n   - Consider adding error handling for scenarios where the token is invalid or expired. This can be done using try-catch blocks around the parsing logic.\n\n4. **Security Considerations**:\n   - Ensure that the `secretKey` used for signing the JWT is securely managed and not hardcoded or exposed in the codebase.\n\nHere's a revised version of the `EnumTokenVerifier` class with these considerations:\n\n```java\npackage com.glasswallet.security;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport io.jsonwebtoken.Claims;\nimport io.jsonwebtoken.Jws;\nimport io.jsonwebtoken.Jwts;\nimport io.jsonwebtoken.JwtException;\nimport org.springframework.stereotype.Component;\n\nimport javax.crypto.SecretKey;\n\n@Component\npublic class EnumTokenVerifier {\n\n    private final SecretKey secretKey;\n\n    public EnumTokenVerifier(SecretKey secretKey) {\n        this.secretKey = secretKey;\n    }\n\n    public PlatformUser verifyAndExtractUser(String token) {\n        try {\n            Jws<Claims> claimsJws = Jwts.parserBuilder()\n                    .setSigningKey(secretKey)\n                    .build()\n                    .parseClaimsJws(token);\n\n            Claims claims = claimsJws.getBody();\n            return mapClaimsToPlatformUser(claims);\n        } catch (JwtException e) {\n            // Handle token parsing exceptions\n            throw new IllegalArgumentException(\"Invalid token\", e);\n        }\n    }\n\n    public PlatformUser extractUser(String token) {\n        return verifyAndExtractUser(token);\n    }\n\n    private PlatformUser mapClaimsToPlatformUser(Claims claims) {\n        // Implement mapping logic from claims to PlatformUser\n        // Example:\n        PlatformUser platformUser = new PlatformUser();\n        platformUser.setId(claims.getSubject());\n        // Set other fields as necessary\n        return platformUser;\n    }\n}\n```\n\nMake sure to implement the `mapClaimsToPlatformUser` method to correctly map the JWT claims to your `PlatformUser` object. This implementation also includes basic error handling for invalid tokens."
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                    "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                    "sources": [
+                        "opened_tab"
+                    ],
+                    "content": "package com.glasswallet.security;\r\n\r\nimport org.springframework.stereotype.Component;\r\n\r\n@Component\r\npublic class EnumTokenVerifier {\r\n    \r\n}\r\n"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/controllers/WalletController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\controllers\\WalletController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenIdentityMapper.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/CompanyIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\CompanyIdentityMapper.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/controller/PlatformUserController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\controller\\PlatformUserController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/repositories/PlatformUserRepository.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\repositories\\PlatformUserRepository.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/service/PlatformUserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\service\\PlatformUserService.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\JwtUtil.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\JwtUtil.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\JwtTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\JwtTokenFilter.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\AuthServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\AuthServiceImpl.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\RefreshTokenService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\RefreshTokenService.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "pom.xml",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\pom.xml",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": []
+                    },
+                    {
+                        "path": ".github\\workflows\\build.yml",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\.github\\workflows\\build.yml",
+                        "sources": []
+                    },
+                    {
+                        "path": ".gitignore",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\.gitignore",
+                        "sources": []
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\SecurityConfig.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\SecurityConfig.java",
+                        "sources": []
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/UserServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\UserServiceImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/UserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\UserService.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenFilter.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenIdentityMapper.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/CompanyUserMapping.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\CompanyUserMapping.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/implementations/CompanyIdentityMapperImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\implementations\\CompanyIdentityMapperImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/requests/GlassUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\requests\\GlassUser.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/services/interfaces/CompanyIdentityMapper.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\services\\interfaces\\CompanyIdentityMapper.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletResolverImpl.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletResolverImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/service/PlatformUserService.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\service\\PlatformUserService.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/security/EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java"
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java"
+                    }
+                ],
+                "usedFilePaths": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "fsPath": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                        "sources": [
+                            "opened_tab"
+                        ],
+                        "content": "package com.glasswallet.security;\r\n\r\nimport org.springframework.stereotype.Component;\r\n\r\n@Component\r\npublic class EnumTokenVerifier {\r\n    \r\n}\r\n"
+                    },
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\security\\EnumTokenFilter.java"
+                    }
+                ]
+            },
+            "createdAt": 1752819802770,
+            "isInternal": false
+        }
+    ],
+    "isAgent": false,
+    "isNameGenerated": true,
+    "isCustomAgent": false,
+    "isUnitTestsAgent": false,
+    "isE2EAgent": false,
+    "autoApply": false
+}
+}
