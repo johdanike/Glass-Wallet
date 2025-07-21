@@ -1,0 +1,10 @@
+package com.glasswallet.Ledger.dtos.response;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class BulkDisbursementResponse {
+    private String message;
+}
