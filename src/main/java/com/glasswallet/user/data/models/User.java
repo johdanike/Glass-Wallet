@@ -1,30 +1,19 @@
 package com.glasswallet.user.data.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.glasswallet.user.enums.Role;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
-@Setter
-@Getter
 @Entity
-@Table(name = "users")
-@JsonIgnoreProperties(ignoreUnknown = true)
-@RequiredArgsConstructor
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"platformId", "platformUserId"})
+})
+@Data
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "id", columnDefinition = "VARCHAR(36)", updatable = false, nullable = false)
     private UUID id;
 
     @Column(nullable = false, unique = true)
@@ -36,40 +25,33 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    private String username;
-
-    @Column(nullable = false)
-    private String passwordHash;
-
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role = Role.REGULAR;
+    @Column(nullable = false, unique = true)
+    private String accountNumber;
 
-    private boolean isLoggedIn = false;
-    private boolean hasWallet = false;
+    @Column(nullable = false)
+    private String username;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private String password;
 
-    private LocalDateTime lastLoginAt;
+    @Column(name = "platform_id", nullable = false)
+    private String platformId;
 
+    @Column(name = "platform_user_id", nullable = false, unique = true)
+    private String platformUserId;
 
-    public String getFullName() {
-        return firstName + " " + lastName;
+    private boolean hasWallet;
+
+    private Instant createdAt;
+    private Instant lastSeenAt;
+
+    private String preferredCurrency;
+    private boolean onboarded;
+    @PreUpdate
+    public void preUpdate() {
+        lastSeenAt = Instant.now();
     }
-    public String getDisplayName() {
-        return username != null && !username.isEmpty() ? username : getFullName();
-    }
-    public String setUsername(String firstName, String lastName) {
-        if (firstName == null || lastName == null) {
-            return null;
-        }
-        String username = firstName.toLowerCase() + "." + lastName.toLowerCase();
-        this.username = username;
-        return username;
-    }
-
 }

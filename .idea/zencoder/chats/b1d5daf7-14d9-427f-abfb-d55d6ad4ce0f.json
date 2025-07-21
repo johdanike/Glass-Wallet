@@ -1,0 +1,100 @@
+{
+    "checksum": "fd74a9cf7347b0db9bcfa9a5ccb7e664bd1187793c919645916cbce29aebea89",
+    "data": {
+    "id": "b1d5daf7-14d9-427f-abfb-d55d6ad4ce0f",
+    "createdAt": 1752819848258,
+    "updatedAt": 1752819857861,
+    "title": "/fix (SecretKey secretKey) Could not autowire. ...",
+    "messages": [
+        {
+            "id": "7d3a23e8-6020-4d77-9078-4b1936c25319",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "(SecretKey secretKey)",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "Could not autowire. No beans of 'SecretKey' type found."
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenVerifier.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/security/EnumTokenVerifier.java",
+                    "content": "package com.glasswallet.security;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport io.jsonwebtoken.Claims;\nimport io.jsonwebtoken.Jws;\nimport io.jsonwebtoken.Jwts;\nimport org.springframework.stereotype.Component;\n\nimport javax.crypto.SecretKey;\n\n@Component\npublic class EnumTokenVerifier {\n\n    private final SecretKey secretKey;\n\n    public EnumTokenVerifier(SecretKey secretKey) {\n        this.secretKey = secretKey;\n    }\n\n    public PlatformUser verifyAndExtractUser(String token) {\n        Jws<Claims> claimsJws = Jwts.parserBuilder()\n                .setSigningKey(secretKey)\n                .build()\n                .parseClaimsJws(token);\n\n        Claims claims = claimsJws.getBody();\n\n        PlatformUser platformUser = new PlatformUser();\n        platformUser.setCompanyId(claims.get(\"companyId\", String.class));\n        platformUser.setCompanyUserId(claims.get(\"companyUserId\", String.class));\n\n        return platformUser;\n    }\n\n    public PlatformUser extractUser(String token) {\n        return verifyAndExtractUser(token); \n    }\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752819848263,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "(SecretKey secretKey)"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "Could not autowire. No beans of 'SecretKey' type found."
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "5e6d96ed-82e0-4434-b8b8-0d4e98cc8af0",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 18 at 16:21.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 32251
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752819857861,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}

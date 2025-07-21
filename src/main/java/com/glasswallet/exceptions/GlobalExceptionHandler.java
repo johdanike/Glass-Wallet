@@ -1,5 +1,6 @@
 package com.glasswallet.exceptions;
 
+import com.glasswallet.platform.exceptions.DuplicatePlatformUserException;
 import com.glasswallet.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(GlassWalletException.class)
-    public ResponseEntity<ErrorResponse> handleTapprException(GlassWalletException e) {
-        log.error("TapprException occurred: {}", e.getMessage());
+    public ResponseEntity<ErrorResponse> handleGlassWalletException(GlassWalletException e) {
+        log.error("GlassWalletException occurred: {}", e.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .path("/api/v1/auth")
                 .build();
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .path("/api/v1/auth")
                 .build();
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -55,14 +56,28 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .path("/api/v1/auth")
                 .build();
-        
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(DuplicatePlatformUserException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatePlatformUser(DuplicatePlatformUserException e) {
+        log.error("DuplicatePlatformUserException occurred: {}", e.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error("Conflict")
+                .message(e.getMessage())
+                .path("/api/v1/auth")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException e) {
         log.error("Validation error occurred: {}", e.getMessage());
-        
+
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -85,7 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception e) {
         log.error("Unexpected error occurred: {}", e.getMessage(), e);
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

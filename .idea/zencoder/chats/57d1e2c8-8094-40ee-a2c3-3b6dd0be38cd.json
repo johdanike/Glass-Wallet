@@ -1,0 +1,100 @@
+{
+    "checksum": "8c37a17746ba567787558635d0834275d1f59f3ec5a8069aaef526b51d061e6d",
+    "data": {
+    "id": "57d1e2c8-8094-40ee-a2c3-3b6dd0be38cd",
+    "createdAt": 1752829869292,
+    "updatedAt": 1752829872855,
+    "title": "/fix new GlassUser(                 platformUse...",
+    "messages": [
+        {
+            "id": "4eb81dd0-ba0b-43ce-9cf7-048087dee685",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "fix"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "new GlassUser(\n                platformUser.getId(),\n                Long.parseLong(platformUser.getCompanyId()), // Assuming companyId is a String that can be parsed to Long\n                Long.parseLong(platformUser.getCompanyUserId()) // Assuming platformUserId is a String that can be parsed to Long",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "'GlassUser(java.util.UUID, java.lang.Long, java.lang.Long)' is not public in 'com.glasswallet.user.dtos.requests.GlassUser'. Cannot be accessed from outside package"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL USER\\Desktop\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\security\\EnumTokenIdentityMapper.java",
+                    "fsPath": "C:/Users/DELL USER/Desktop/Glass-Wallet/src/main/java/com/glasswallet/security/EnumTokenIdentityMapper.java",
+                    "content": "package com.glasswallet.security;\n\nimport com.glasswallet.platform.data.models.PlatformUser;\nimport com.glasswallet.user.services.interfaces.CompanyIdentityMapper;\nimport com.glasswallet.user.dtos.requests.GlassUser;\n\nimport java.util.UUID;\n\npublic class EnumTokenIdentityMapper implements CompanyIdentityMapper {\n\n    @Override\n    public GlassUser toGlassUser(String token) {\n        // Logic to extract and validate the token from Enum\n        // This would typically involve decoding the token and mapping it to a GlassUser\n        return null; // Replace with actual implementation\n    }\n\n    @Override\n    public UUID getInternalWalletId(String companyId, UUID userId) {\n        // Logic to retrieve the internal wallet ID based on companyId and userId\n        return null; // Replace with actual implementation\n    }\n\n    @Override\n    public GlassUser map(PlatformUser platformUser) {\n        return new GlassUser(\n                platformUser.getId(),\n                Long.parseLong(platformUser.getCompanyId()), // Assuming companyId is a String that can be parsed to Long\n                Long.parseLong(platformUser.getCompanyUserId()) // Assuming platformUserId is a String that can be parsed to Long\n        );\n    }\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true
+            },
+            "createdAt": 1752829869298,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "fix"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/fix"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "new GlassUser(\n                platformUser.getId(),\n                Long.parseLong(platformUser.getCompanyId()), // Assuming companyId is a String that can be parsed to Long\n                Long.parseLong(platformUser.getCompanyUserId()) // Assuming platformUserId is a String that can be parsed to Long"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "'GlassUser(java.util.UUID, java.lang.Long, java.lang.Long)' is not public in 'com.glasswallet.user.dtos.requests.GlassUser'. Cannot be accessed from outside package"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "5a249274-a5de-4e65-b2b5-c944e1520fa0",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "Rate limit exceeded. You can try again on July 18 at 16:21.",
+                    "allowRegenerate": true,
+                    "actions": [
+                        {
+                            "type": "upgradePlan",
+                            "waitSeconds": 22237
+                        }
+                    ]
+                }
+            ],
+            "createdAt": 1752829872855,
+            "isInternal": false
+        }
+    ],
+    "isAgent": true,
+    "isCustomAgent": false
+}
+}

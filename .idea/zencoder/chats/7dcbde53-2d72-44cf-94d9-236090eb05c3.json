@@ -1,0 +1,503 @@
+{
+    "checksum": "dde2bb7e305a95fd6f5f35cb55e44545c6f5074442a645e98358d9a6fa75edfa",
+    "data": {
+    "id": "7dcbde53-2d72-44cf-94d9-236090eb05c3",
+    "createdAt": 1753091301752,
+    "updatedAt": 1753091312572,
+    "title": "Java Collection Handling Alert",
+    "messages": [
+        {
+            "id": "c3069437-385a-4bc6-8312-152caf707098",
+            "role": "user",
+            "content": [
+                {
+                    "type": "command",
+                    "commandName": "explain"
+                },
+                {
+                    "type": "codeSnippet",
+                    "text": "private List<Wallet> wallets",
+                    "language": "java"
+                },
+                {
+                    "type": "text",
+                    "text": "'Basic' attribute type should not be a container"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                    "fsPath": "C:/Users/DELL/Desktop/New folder/Glass-Wallet/src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                    "content": "package com.glasswallet.Ledger.data.model;\n\nimport com.glasswallet.Ledger.enums.LedgerType;\nimport com.glasswallet.Ledger.enums.Status;\nimport com.glasswallet.Wallet.data.model.Wallet;\nimport com.glasswallet.user.data.models.User;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport org.springframework.data.annotation.Id;\n\nimport java.math.BigDecimal;\nimport java.time.Instant;\nimport java.time.LocalDateTime;\nimport java.util.List;\nimport java.util.UUID;\n\n@Entity\n@Builder\n@Getter\n@Setter\n@AllArgsConstructor\n@NoArgsConstructor\npublic class LedgerEntry {\n\n    @jakarta.persistence.Id\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    private UUID id;\n    private String companyId;\n    @ManyToOne\n    @JoinColumn(name = \"user_id_id\")\n    private  User userId;\n    @Enumerated(EnumType.STRING)\n    private LedgerType type;\n    private BigDecimal amount;\n    private String currency;\n    private String reference;\n    private String senderId;\n    private String receiverId;\n    private Status status;\n    private String balanceCrypto;\n    private String balanceUsd;\n    private Instant timestamp;\n    private List<Wallet> wallets;\n\n\n\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/exceptions/GlobalExceptionHandler.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\exceptions\\GlobalExceptionHandler.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/responses/ApiResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\responses\\ApiResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/responses/WalletProfileDto.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\responses\\WalletProfileDto.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/response/WalletBalanceResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\response\\WalletBalanceResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletStatus.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletStatus.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletType.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletType.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletCurrency.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletCurrency.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletAlreadyExistsException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletAlreadyExistsException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/InvalidCredentialsException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\InvalidCredentialsException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/InsufficientBalanceException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\InsufficientBalanceException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletNotFoundException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletNotFoundException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletCreationFailedException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletCreationFailedException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/utils/PaymentResult.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\utils\\PaymentResult.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/utils/WalletUtils.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\utils\\WalletUtils.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/requests/CreateWalletRequest.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\requests\\CreateWalletRequest.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/response/CreateWalletResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\response\\CreateWalletResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/enums/Role.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\enums\\Role.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/application.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/secrets.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/data/model/Wallet.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\data\\model\\Wallet.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [],
+                "usedFilePaths": [
+                    {
+                        "path": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "fsPath": "C:/Users/DELL/Desktop/New folder/Glass-Wallet/src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "content": "package com.glasswallet.Ledger.data.model;\n\nimport com.glasswallet.Ledger.enums.LedgerType;\nimport com.glasswallet.Ledger.enums.Status;\nimport com.glasswallet.Wallet.data.model.Wallet;\nimport com.glasswallet.user.data.models.User;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport org.springframework.data.annotation.Id;\n\nimport java.math.BigDecimal;\nimport java.time.Instant;\nimport java.time.LocalDateTime;\nimport java.util.List;\nimport java.util.UUID;\n\n@Entity\n@Builder\n@Getter\n@Setter\n@AllArgsConstructor\n@NoArgsConstructor\npublic class LedgerEntry {\n\n    @jakarta.persistence.Id\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    private UUID id;\n    private String companyId;\n    @ManyToOne\n    @JoinColumn(name = \"user_id_id\")\n    private  User userId;\n    @Enumerated(EnumType.STRING)\n    private LedgerType type;\n    private BigDecimal amount;\n    private String currency;\n    private String reference;\n    private String senderId;\n    private String receiverId;\n    private Status status;\n    private String balanceCrypto;\n    private String balanceUsd;\n    private Instant timestamp;\n    private List<Wallet> wallets;\n\n\n\n}\n",
+                        "language": "java"
+                    }
+                ]
+            },
+            "createdAt": 1753091301755,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "command",
+                                "attrs": {
+                                    "label": "explain"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "/explain"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "codeBlock",
+                                "attrs": {
+                                    "language": "java"
+                                },
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "private List<Wallet> wallets"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "'Basic' attribute type should not be a container"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "7da6d5fc-b543-4866-8a9f-99faf9767310",
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The terminal message you provided indicates a warning or error related to the use of a container type as a basic attribute in a Java class that is likely being used with a persistence framework like JPA (Java Persistence API). Let's break down the message and the relevant code snippet:\n\n### Code Snippet\n```java\nprivate List<Wallet> wallets;\n```\n\n### Terminal Message\n```\n'Basic' attribute type should not be a container\n```\n\n### Explanation\n\n1. **Attribute Type**: The message is indicating that the attribute `wallets` is of type `List<Wallet>`, which is a container type (specifically, a collection).\n\n2. **Basic Attribute**: In the context of JPA, a \"basic\" attribute typically refers to a simple, non-collection type that can be directly mapped to a database column, such as `String`, `Integer`, `BigDecimal`, etc.\n\n3. **Container Types**: Container types like `List`, `Set`, or `Map` are not considered \"basic\" because they represent collections of objects rather than a single value. In JPA, collections need to be handled differently, often requiring annotations like `@OneToMany`, `@ManyToMany`, etc., to define the relationship between entities.\n\n4. **Potential Issue**: The warning suggests that the `wallets` attribute is being treated as a basic attribute, which is incorrect for a collection. This could lead to issues with how the data is persisted or retrieved from the database.\n\n5. **Resolution**:\n   - **Annotate the Collection**: If `wallets` is intended to represent a relationship with another entity, you should annotate it with the appropriate JPA annotation. For example, if each `LedgerEntry` can have multiple `Wallet` objects, you might use `@OneToMany` or `@ManyToMany`, depending on the relationship.\n   - **Example**:\n     ```java\n     @OneToMany(mappedBy = \"ledgerEntry\", cascade = CascadeType.ALL, fetch = FetchType.LAZY)\n     private List<Wallet> wallets;\n     ```\n   - **MappedBy**: The `mappedBy` attribute is used to specify the field in the `Wallet` entity that owns the relationship.\n   - **Cascade and Fetch**: These attributes control how operations are cascaded to related entities and how the collection is fetched from the database.\n\n### Contextual Insights\n\n- **System Behavior**: Without the correct annotations, the persistence framework may not correctly handle the `wallets` collection, leading to runtime errors or incorrect data handling.\n- **Necessary Actions**: Review the relationship between `LedgerEntry` and `Wallet` to determine the correct JPA annotations and ensure that the database schema supports this relationship.\n\nBy addressing this warning, you can ensure that your entity relationships are correctly defined and that your application interacts with the database as expected."
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                    "fsPath": "C:/Users/DELL/Desktop/New folder/Glass-Wallet/src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                    "content": "package com.glasswallet.Ledger.data.model;\n\nimport com.glasswallet.Ledger.enums.LedgerType;\nimport com.glasswallet.Ledger.enums.Status;\nimport com.glasswallet.Wallet.data.model.Wallet;\nimport com.glasswallet.user.data.models.User;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport org.springframework.data.annotation.Id;\n\nimport java.math.BigDecimal;\nimport java.time.Instant;\nimport java.time.LocalDateTime;\nimport java.util.List;\nimport java.util.UUID;\n\n@Entity\n@Builder\n@Getter\n@Setter\n@AllArgsConstructor\n@NoArgsConstructor\npublic class LedgerEntry {\n\n    @jakarta.persistence.Id\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    private UUID id;\n    private String companyId;\n    @ManyToOne\n    @JoinColumn(name = \"user_id_id\")\n    private  User userId;\n    @Enumerated(EnumType.STRING)\n    private LedgerType type;\n    private BigDecimal amount;\n    private String currency;\n    private String reference;\n    private String senderId;\n    private String receiverId;\n    private Status status;\n    private String balanceCrypto;\n    private String balanceUsd;\n    private Instant timestamp;\n    private List<Wallet> wallets;\n\n\n\n}\n",
+                    "language": "java"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/exceptions/GlobalExceptionHandler.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\exceptions\\GlobalExceptionHandler.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/responses/ApiResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\responses\\ApiResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/dtos/responses/WalletProfileDto.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\dtos\\responses\\WalletProfileDto.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/service/implementation/WalletServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\service\\implementation\\WalletServiceImpl.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/response/WalletBalanceResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\response\\WalletBalanceResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletStatus.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletStatus.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletType.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletType.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/enums/WalletCurrency.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\enums\\WalletCurrency.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletAlreadyExistsException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletAlreadyExistsException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/InvalidCredentialsException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\InvalidCredentialsException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/InsufficientBalanceException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\InsufficientBalanceException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletNotFoundException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletNotFoundException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/exceptions/WalletCreationFailedException.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\exceptions\\WalletCreationFailedException.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/utils/PaymentResult.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\utils\\PaymentResult.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/utils/WalletUtils.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\utils\\WalletUtils.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/requests/CreateWalletRequest.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\requests\\CreateWalletRequest.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/dtos/response/CreateWalletResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\dtos\\response\\CreateWalletResponse.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/enums/Role.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\enums\\Role.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/application.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/secrets.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/data/model/Wallet.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\data\\model\\Wallet.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [],
+                "usedFilePaths": [
+                    {
+                        "path": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "fsPath": "C:/Users/DELL/Desktop/New folder/Glass-Wallet/src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "content": "package com.glasswallet.Ledger.data.model;\n\nimport com.glasswallet.Ledger.enums.LedgerType;\nimport com.glasswallet.Ledger.enums.Status;\nimport com.glasswallet.Wallet.data.model.Wallet;\nimport com.glasswallet.user.data.models.User;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport org.springframework.data.annotation.Id;\n\nimport java.math.BigDecimal;\nimport java.time.Instant;\nimport java.time.LocalDateTime;\nimport java.util.List;\nimport java.util.UUID;\n\n@Entity\n@Builder\n@Getter\n@Setter\n@AllArgsConstructor\n@NoArgsConstructor\npublic class LedgerEntry {\n\n    @jakarta.persistence.Id\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    private UUID id;\n    private String companyId;\n    @ManyToOne\n    @JoinColumn(name = \"user_id_id\")\n    private  User userId;\n    @Enumerated(EnumType.STRING)\n    private LedgerType type;\n    private BigDecimal amount;\n    private String currency;\n    private String reference;\n    private String senderId;\n    private String receiverId;\n    private Status status;\n    private String balanceCrypto;\n    private String balanceUsd;\n    private Instant timestamp;\n    private List<Wallet> wallets;\n\n\n\n}\n",
+                        "language": "java"
+                    }
+                ]
+            },
+            "createdAt": 1753091312572,
+            "isInternal": false
+        }
+    ],
+    "isAgent": false,
+    "isNameGenerated": true,
+    "isCustomAgent": false
+}
+}

@@ -1,0 +1,667 @@
+{
+    "checksum": "b587cb70467de00543a2c6fd55b4c8d128f94d99bf1a46392a6f8cde1e1c6401",
+    "data": {
+    "id": "fd510b33-94cb-4367-b5c6-1c78185e8cbd",
+    "createdAt": 1753090529354,
+    "updatedAt": 1753090563324,
+    "title": "Spring Database Connection Error",
+    "messages": [
+        {
+            "id": "9318eaa3-52d2-405b-bcee-0683f3466ad7",
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "why am  i getting this databaseerror: \"org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to open JDBC Connection for DDL execution [Unknown database 'glass-wallet'] [n/a]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:970) ~[spring-context-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:1362) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:1351) ~[spring-boot-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat com.glasswallet.GlassWalletApplication.main(GlassWalletApplication.java:23) ~[classes/:na]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat java.base/java.lang.reflect.Method.invoke(Method.java:569) ~[na:na]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.5.0.jar:3.5.0]"
+                },
+                {
+                    "type": "text",
+                    "text": "Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to open JDBC Connection for DDL execution [Unknown database 'glass-wallet'] [n/a]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.7.jar:6.2.7]"
+                },
+                {
+                    "type": "text",
+                    "text": "\t... 20 common frames omitted\""
+                }
+            ],
+            "context": {
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/GlassWalletApplication.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\GlassWalletApplication.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/data/model/Wallet.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\data\\model\\Wallet.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/User.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\User.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/data/models/Transaction.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\data\\models\\Transaction.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/CompanyUserMapping.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\CompanyUserMapping.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/enums/Role.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\enums\\Role.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/application.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/secrets.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java"
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "src\\main\\resources\\application.properties"
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "src\\main\\resources\\secrets.properties"
+                    }
+                ],
+                "usedFilePaths": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java"
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "src\\main\\resources\\application.properties"
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "src\\main\\resources\\secrets.properties"
+                    }
+                ]
+            },
+            "createdAt": 1753090529365,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "why am  i getting this databaseerror: \"org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to open JDBC Connection for DDL execution [Unknown database 'glass-wallet'] [n/a]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:970) ~[spring-context-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:1362) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.SpringApplication.run(SpringApplication.java:1351) ~[spring-boot-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat com.glasswallet.GlassWalletApplication.main(GlassWalletApplication.java:23) ~[classes/:na]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat java.base/java.lang.reflect.Method.invoke(Method.java:569) ~[na:na]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.5.0.jar:3.5.0]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to open JDBC Connection for DDL execution [Unknown database 'glass-wallet'] [n/a]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\tat org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.7.jar:6.2.7]"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "\t... 20 common frames omitted\""
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "d39ebfe2-5671-4cdd-b2e8-1024c50b4ae4",
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The error you're encountering is due to the application trying to connect to a database named `glass-wallet`, which does not exist. The error message `Unknown database 'glass-wallet'` indicates that the database specified in your configuration is not found on the MySQL server.\n\nHere are the steps you can take to resolve this issue:\n\n1. **Verify Database Existence**: Ensure that the database `glass-wallet` exists on your MySQL server. You can do this by logging into your MySQL server and running the following command:\n   ```sql\n   SHOW DATABASES;\n   ```\n   If `glass-wallet` is not listed, you need to create it.\n\n2. **Create the Database**: If the database does not exist, you can create it using the following SQL command:\n   ```sql\n   CREATE DATABASE `glass-wallet`;\n   ```\n\n3. **Check Database Configuration**: Ensure that your database configuration in `application.properties` and `secrets.properties` is correct. The `DB_URL` in `secrets.properties` should match the database name you intend to use:\n   ```properties\n   DB_URL=jdbc:mysql://localhost:3306/glass-wallet\n   ```\n\n4. **Verify Credentials**: Make sure that the username and password specified in your configuration files are correct and have the necessary permissions to access the database.\n\n5. **Check for Typographical Errors**: Double-check for any typographical errors in the database name within your configuration files.\n\nOnce you have verified and corrected these settings, restart your application and see if the issue persists. If you continue to encounter problems, ensure that your MySQL server is running and accessible from your application."
+                }
+            ],
+            "context": {
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "src/main/java/com/glasswallet/GlassWalletApplication.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\GlassWalletApplication.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Wallet/data/model/Wallet.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Wallet\\data\\model\\Wallet.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/platform/data/models/PlatformUser.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\platform\\data\\models\\PlatformUser.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/User.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\User.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/data/models/Transaction.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\data\\models\\Transaction.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/Ledger/data/model/LedgerEntry.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\Ledger\\data\\model\\LedgerEntry.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/data/models/CompanyUserMapping.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\data\\models\\CompanyUserMapping.java",
+                        "sources": [
+                            "keyword_search"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/enums/Role.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\enums\\Role.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/user/controllers/UserController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\user\\controllers\\UserController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/application.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/secrets.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/config/DatabaseConfig.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\New folder\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "rerankedFiles": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java"
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "src\\main\\resources\\application.properties"
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "src\\main\\resources\\secrets.properties"
+                    }
+                ],
+                "usedFilePaths": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java",
+                        "fsPath": "src\\main\\java\\com\\glasswallet\\config\\DatabaseConfig.java"
+                    },
+                    {
+                        "path": "src\\main\\resources\\application.properties",
+                        "fsPath": "src\\main\\resources\\application.properties"
+                    },
+                    {
+                        "path": "src\\main\\resources\\secrets.properties",
+                        "fsPath": "src\\main\\resources\\secrets.properties"
+                    }
+                ]
+            },
+            "createdAt": 1753090563324,
+            "isInternal": false
+        }
+    ],
+    "isAgent": false,
+    "isNameGenerated": true,
+    "isCustomAgent": false,
+    "isUnitTestsAgent": false,
+    "isE2EAgent": false,
+    "autoApply": false
+}
+}
