@@ -162,8 +162,8 @@ public class UserServiceTest {
 
         PlatformUser platformUser = new PlatformUser();
         platformUser.setUser(user);
-        platformUser.setCompanyId("100");
-        platformUser.setCompanyUserId("200");
+        platformUser.setPlatformId("100");
+        platformUser.setPlatformUserId("200");
 
         GlassUser glassUser = identityMapper.map(platformUser);
 
@@ -176,8 +176,8 @@ public class UserServiceTest {
     public void map_shouldThrowIfPlatformUserUserIsNull() {
         PlatformUser platformUser = new PlatformUser();
         platformUser.setUser(null);
-        platformUser.setCompanyId("101");
-        platformUser.setCompanyUserId("201");
+        platformUser.setPlatformId("101");
+        platformUser.setPlatformUserId("201");
 
         assertThrows(NullPointerException.class, () -> identityMapper.map(platformUser));
     }
@@ -196,8 +196,8 @@ public class UserServiceTest {
 
         PlatformUser platformUser = new PlatformUser();
         platformUser.setUser(user);
-        platformUser.setCompanyId("300");
-        platformUser.setCompanyUserId("400");
+        platformUser.setPlatformId("300");
+        platformUser.setPlatformUserId("400");
 
         assertNotNull(identityMapper.map(platformUser));
     }
@@ -210,8 +210,8 @@ public class UserServiceTest {
 
         PlatformUser platformUser = new PlatformUser();
         platformUser.setUser(user);
-        platformUser.setCompanyId("10");
-        platformUser.setCompanyUserId("20");
+        platformUser.setPlatformId("10");
+        platformUser.setPlatformUserId("20");
 
         GlassUser mapped = identityMapper.map(platformUser);
 
@@ -228,8 +228,8 @@ public class UserServiceTest {
     @Test
     void map_shouldFailIfCompanyIdNotNumeric() {
         PlatformUser platformUser = new PlatformUser();
-        platformUser.setCompanyId("abc");
-        platformUser.setCompanyUserId("123");
+        platformUser.setPlatformId("abc");
+        platformUser.setPlatformUserId("123");
         platformUser.setUser(new User());
 
         assertThrows(NumberFormatException.class, () -> identityMapper.map(platformUser));
@@ -238,8 +238,8 @@ public class UserServiceTest {
     @Test
     public void map_shouldFailIfCompanyUserIdNotNumeric() {
         PlatformUser platformUser = new PlatformUser();
-        platformUser.setCompanyId("100");
-        platformUser.setCompanyUserId("abc");
+        platformUser.setPlatformId("100");
+        platformUser.setPlatformUserId("abc");
         platformUser.setUser(new User());
 
         assertThrows(NumberFormatException.class, () -> identityMapper.map(platformUser));
@@ -248,8 +248,8 @@ public class UserServiceTest {
     @Test
     public void map_shouldThrowNullPointerIfUserIdIsNull() {
         PlatformUser platformUser = new PlatformUser();
-        platformUser.setCompanyId("10");
-        platformUser.setCompanyUserId("20");
+        platformUser.setPlatformId("10");
+        platformUser.setPlatformUserId("20");
         User user = new User();
         user.setId(null);
         platformUser.setUser(user);

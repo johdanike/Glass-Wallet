@@ -3,6 +3,7 @@ package com.glasswallet.Ledger.data.model;
 import com.glasswallet.Ledger.enums.LedgerType;
 import com.glasswallet.Ledger.enums.Status;
 import com.glasswallet.Wallet.data.model.Wallet;
+import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.user.data.models.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class LedgerEntry {
 
     @jakarta.persistence.Id
@@ -43,8 +45,5 @@ public class LedgerEntry {
     private Instant timestamp;
     @ManyToOne
     private Wallet wallet;
-
-
-
 
 }

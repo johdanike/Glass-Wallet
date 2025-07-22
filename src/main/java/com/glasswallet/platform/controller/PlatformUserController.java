@@ -26,8 +26,8 @@ public class PlatformUserController {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .fullName(user.getFirstName() + " " + user.getLastName())
-                .companyId(platformUser.getCompanyId())
-                .companyUserId(platformUser.getCompanyUserId())
+                .companyId(platformUser.getPlatformId())
+                .companyUserId(platformUser.getPlatformUserId())
                 .build();
 
         return ResponseEntity.ok(response);

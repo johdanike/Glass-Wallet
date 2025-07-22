@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,32 +28,34 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Autowired
     private final LedgerRepo ledgerRepo;
+
+
+
     @Override
     public DepositResponse recordDeposit(DepositRequest request) {
-        LedgerEntry entry = LedgerEntry.builder()
-                .id( UUID.randomUUID())
-                .userId( request.getUserId() )
-                .companyId( request.getCompanyId() )
-                .senderId( request.getSenderId() )
-                .receiverId( request.getReceiverId()  )
-                .amount( request.getAmount() )
-                .reference( request.getReference()  )
-                .type(LedgerType.DEPOSIT )
-                .status( Status.SUCCESSFUL )
-                .currency( request.getCurrency() )
-                .timestamp(Instant.now())
-                .build();
-                ledgerRepo.save(entry);
+        LedgerEntry entry = createLedgerEntryFromDeposit(request);
+        logTransaction(entry);
 
-                DepositResponse response = new DepositResponse();
-                response.setMessage( request.getAmount() + "Successful sent to" + request.getReceiverId());
-                return response;
+        DepositResponse response = new DepositResponse();
+        response.setMessage(request.getAmount() + " successfully sent to " + request.getReceiverId());
+        return response;
     }
+
 
     @Override
     public WithdrawalResponse recordWithdrawal(WithdrawalRequest request) {
+        LedgerEntry entry = createLedgerEntryFromWithdrawal(request);
+        logTransaction(entry);
+
+        createLedgerEntryFromWithdrawal(request);
+        WithdrawalResponse response = new WithdrawalResponse();
+        response.setMessage( request.getAmount() + "withdrawn from" + request.getSenderId() +"to" + request.getReceiverId());
+        return response;
+
+    }
+
+    private LedgerEntry createLedgerEntryFromWithdrawal(WithdrawalRequest request) {
         LedgerEntry entry = LedgerEntry.builder()
-                .id( UUID.randomUUID())
                 .senderId( request.getSenderId()  )
                 .companyId( request.getCompanyId() )
                 .userId( request.getUserId() )
@@ -64,51 +67,41 @@ public class LedgerServiceImpl implements LedgerService {
                 .status( Status.PENDING )
                 .timestamp( Instant.now() )
                 .build();
-
-
-
-        ledgerRepo.save(entry);
-        WithdrawalResponse response = new WithdrawalResponse();
-        response.setMessage( request.getAmount() + "withdrawn from" + request.getSenderId() +"to" + request.getReceiverId());
-        return response;
-
+        return entry;
     }
 
     @Override
     public TransferResponse recordTransfer(TransferRequest request) {
         LedgerEntry sendEntry = LedgerEntry.builder()
-                .id( UUID.randomUUID())
-                .userId( request.getUserId() )
-                .senderId( request.getSenderId() )
-                .type( LedgerType.TRANSFER_OUT )
-                .status( Status.SUCCESSFUL )
-                .amount( request.getAmount() )
-                .currency( request.getCurrency() )
-                .reference( request.getReference() )
-                .timestamp(  Instant.now() )
+                .userId(request.getUserId())
+                .senderId(request.getSenderId())
+                .type(LedgerType.TRANSFER_OUT)
+                .status(Status.SUCCESSFUL)
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .reference(request.getReference())
+                .timestamp(Instant.now())
                 .build();
 
         LedgerEntry receiverEntry = LedgerEntry.builder()
-                .id( UUID.randomUUID())
-                .userId( request.getUserId() )
-                .receiverId( request.getReceiverId() )
-                .type( LedgerType.TRANSFER_IN)
-                .status( Status.SUCCESSFUL )
-                .amount( request.getAmount() )
-                .currency( request.getCurrency() )
-                .reference( request.getReference() )
-                .timestamp(  Instant.now() )
+                .userId(request.getUserId())
+                .receiverId(request.getReceiverId())
+                .type(LedgerType.TRANSFER_IN)
+                .status(Status.SUCCESSFUL)
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .reference(request.getReference())
+                .timestamp(Instant.now())
                 .build();
 
-        ledgerRepo.save(sendEntry);
-        ledgerRepo.save(receiverEntry);
-
+        logTransaction(List.of(sendEntry, receiverEntry));
         TransferResponse response = new TransferResponse();
-        response.setMessage(request.getAmount() + "withdrawn from" + request.getSenderId() +"to" + request.getReceiverId() + "with a reference of" + request.getReference() + "was successful");
+        response.setMessage(request.getAmount() +
+                " transferred from " + request.getSenderId() +
+                " to " + request.getReceiverId() +
+                " with reference " + request.getReference());
 
         return response;
-
-
 
     }
 
@@ -118,15 +111,37 @@ public class LedgerServiceImpl implements LedgerService {
             recordTransfer( transfer );
 
             BulkDisbursementResponse response = new BulkDisbursementResponse();
-            response.setMessage( request.getAmount() + "withdrawn from" + request.getSenderId() + "to" + request.getReceiverId() + "with a reference of" + request.getReference() + "was successful" );
+            response.setMessage( request.getAmount() +
+                    " withdrawn from " + request.getSenderId() + " to " + request.getReceiverId() + " with a reference of " + request.getReference() + " was successful." );
 
             return response;
-
-
         }
         return null;
-
-
     }
+
+    private void logTransaction(LedgerEntry entry) {
+        ledgerRepo.save(entry);
+    }
+
+    private void logTransaction(List<LedgerEntry> entries) {
+        ledgerRepo.saveAll(entries);
+    }
+
+    private LedgerEntry createLedgerEntryFromDeposit(DepositRequest request) {
+        return LedgerEntry.builder()
+                .id(UUID.randomUUID())
+                .userId(request.getUserId())
+                .companyId(request.getCompanyId())
+                .senderId(request.getSenderId())
+                .receiverId(request.getReceiverId())
+                .amount(request.getAmount())
+                .reference(request.getReference())
+                .type(LedgerType.DEPOSIT)
+                .status(Status.SUCCESSFUL)
+                .currency(request.getCurrency())
+                .timestamp(Instant.now())
+                .build();
+    }
+
 
 }

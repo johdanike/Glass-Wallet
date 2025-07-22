@@ -7,6 +7,8 @@ import com.glasswallet.Wallet.dtos.response.WalletBalanceResponse;
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.Wallet.exceptions.InvalidCredentialsException;
 import com.glasswallet.Wallet.utils.PaymentResult;
+import com.glasswallet.transaction.data.models.Transaction;
+import com.glasswallet.transaction.enums.TransactionType;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.dtos.responses.WalletProfileDto;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,4 +38,7 @@ public interface WalletService {
     PaymentResult receivePayment(String recipientIdentifier, WalletCurrency currency, BigDecimal amount);
 
     WalletProfileDto getProfile(UUID id);
+    Wallet getWalletById(UUID walletId);
+    @Transactional
+    Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, String reference, BigDecimal amount);
 }

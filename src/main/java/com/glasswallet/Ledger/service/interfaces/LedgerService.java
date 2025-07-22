@@ -8,11 +8,12 @@ import com.glasswallet.Ledger.dtos.response.BulkDisbursementResponse;
 import com.glasswallet.Ledger.dtos.response.DepositResponse;
 import com.glasswallet.Ledger.dtos.response.TransferResponse;
 import com.glasswallet.Ledger.dtos.response.WithdrawalResponse;
+import com.glasswallet.transaction.data.models.Transaction;
 
 public interface LedgerService {
     DepositResponse recordDeposit(DepositRequest request);
     WithdrawalResponse recordWithdrawal(WithdrawalRequest request);
     TransferResponse recordTransfer(TransferRequest request);
     BulkDisbursementResponse recordBulkDisbursement(BulkDisbursementRequest request);
-
+//    void logTransaction(Transaction tx);
 }

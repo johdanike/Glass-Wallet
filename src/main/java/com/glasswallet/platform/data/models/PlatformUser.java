@@ -6,7 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -26,16 +26,17 @@ public class PlatformUser {
     private UUID id;
 
     @Column(name = "platform_user_id", nullable = false)
-    private String companyUserId;
+    private String platformUserId;
 
     @Column(name = "platform_id", nullable = false)
-    private String companyId; // e.g. "enum", "quickteller"
+    private String platformId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-//    private List<User> values;
-
+    private BigDecimal balanceFiat = BigDecimal.ZERO;
+    private BigDecimal balanceSui = BigDecimal.ZERO;
     private String token;
+
+
 }
