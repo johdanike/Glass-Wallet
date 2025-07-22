@@ -16,6 +16,7 @@ import com.glasswallet.Wallet.service.interfaces.WalletService;
 import com.glasswallet.Wallet.utils.PaymentResult;
 import com.glasswallet.Wallet.utils.WalletUtils;
 import com.glasswallet.transaction.data.models.Transaction;
+import com.glasswallet.transaction.data.repositories.TransactionRepository;
 import com.glasswallet.transaction.enums.TransactionStatus;
 import com.glasswallet.transaction.enums.TransactionType;
 import com.glasswallet.transaction.services.interfaces.SuiRateService;
@@ -47,6 +48,7 @@ public class WalletServiceImpl implements WalletService {
     private final WalletResolver walletResolver;
     private final PasswordEncoder passwordEncoder;
     private final LedgerService ledgerService;
+    private final TransactionRepository transactionRepository;
 
     @Override
     public CreateWalletResponse createWalletForUser(UUID userId, CreateWalletRequest request) {
@@ -240,31 +242,48 @@ public class WalletServiceImpl implements WalletService {
 
     @Transactional
     @Override
-    public Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, String reference, BigDecimal amount) {
+    public Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, WalletCurrency currency, String reference, BigDecimal amount) {
         checkIfAmountIsPositive(amount);
+        checkTransactionAndCurrencyTypeFromWallet(type, currency);
 
-        fetchSenderAndReceiver foundSenderAndReceiver = getSenderAndReceiver(senderId, receiverId);
+        fetchSenderAndReceiver foundSenderAndReceiver = getSenderAndReceiver(senderId, receiverId, currency);
 
         validateBalanceBeforeProcessingTx(amount, foundSenderAndReceiver.senderWallet());
 
-        return processTransaction(companyId, type, amount, foundSenderAndReceiver.senderWallet(), foundSenderAndReceiver.receiverWallet(), foundSenderAndReceiver.sender(), foundSenderAndReceiver.receiver());
+        return processTransaction(companyId, type, amount,
+                foundSenderAndReceiver.senderWallet(),
+                foundSenderAndReceiver.receiverWallet(),
+                foundSenderAndReceiver.sender(),
+                foundSenderAndReceiver.receiver());
     }
 
-    private fetchSenderAndReceiver getSenderAndReceiver(UUID senderId, UUID receiverId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new UserNotFoundException("Sender not found"));
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+    private static void checkTransactionAndCurrencyTypeFromWallet(TransactionType type, WalletCurrency currency) {
+        if (type == TransactionType.CRYPTO_TRANSFER && currency != WalletCurrency.SUI) {
+            throw new IllegalArgumentException("CRYPTO_TRANSFER must use SUI wallet");
+        }
 
-        Wallet senderWallet = walletRepository.findByUserAndCurrencyType(sender, WalletCurrency.NGN)
-                .orElseThrow(() -> new WalletNotFoundException("Sender wallet not found"));
-        Wallet receiverWallet = walletRepository.findByUserAndCurrencyType(receiver, WalletCurrency.NGN)
-                .orElseThrow(() -> new WalletNotFoundException("Receiver wallet not found"));
-        fetchSenderAndReceiver foundSenderAndReceiver = new fetchSenderAndReceiver(sender, receiver, senderWallet, receiverWallet);
-        return foundSenderAndReceiver;
+        if (type == TransactionType.FIAT_TRANSFER && currency != WalletCurrency.NGN) {
+            throw new IllegalArgumentException("FIAT_TRANSFER must use NGN wallet");
+        }
     }
 
-    private record fetchSenderAndReceiver(User sender, User receiver, Wallet senderWallet, Wallet receiverWallet) {
+
+    private fetchSenderAndReceiver getSenderAndReceiver(UUID senderId, UUID receiverId, WalletCurrency currency) {
+    User sender = userRepository.findById(senderId)
+            .orElseThrow(() -> new UserNotFoundException("Sender not found"));
+    User receiver = userRepository.findById(receiverId)
+            .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+
+    Wallet senderWallet = walletRepository.findByUserAndCurrencyType(sender, currency)
+            .orElseThrow(() -> new WalletNotFoundException("Sender wallet not found"));
+    Wallet receiverWallet = walletRepository.findByUserAndCurrencyType(receiver, currency)
+            .orElseThrow(() -> new WalletNotFoundException("Receiver wallet not found"));
+
+    return new fetchSenderAndReceiver(sender, receiver, senderWallet, receiverWallet);
+}
+
+
+private record fetchSenderAndReceiver(User sender, User receiver, Wallet senderWallet, Wallet receiverWallet) {
     }
 
     private static void checkIfAmountIsPositive(BigDecimal amount) {
@@ -300,12 +319,12 @@ public class WalletServiceImpl implements WalletService {
                 .platformId(companyId.toString())
                 .transactionType(type)
                 .amount(amount)
-                .receiverId(receiver.getId().toString())
                 .status(TransactionStatus.SUCCESSFUL)
                 .timestamp(Instant.now())
                 .build();
 
         ledgerService.logTransaction(tx);
+        transactionRepository.save(tx);
         return tx;
     }
 

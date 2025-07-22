@@ -39,6 +39,7 @@ public interface WalletService {
 
     WalletProfileDto getProfile(UUID id);
     Wallet getWalletById(UUID walletId);
+
     @Transactional
-    Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, String reference, BigDecimal amount);
+    Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, WalletCurrency currency, String reference, BigDecimal amount);
 }

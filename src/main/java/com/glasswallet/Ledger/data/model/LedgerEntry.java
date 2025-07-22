@@ -21,7 +21,6 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class LedgerEntry {
 
     @jakarta.persistence.Id

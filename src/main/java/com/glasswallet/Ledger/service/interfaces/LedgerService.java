@@ -15,5 +15,5 @@ public interface LedgerService {
     WithdrawalResponse recordWithdrawal(WithdrawalRequest request);
     TransferResponse recordTransfer(TransferRequest request);
     BulkDisbursementResponse recordBulkDisbursement(BulkDisbursementRequest request);
-//    void logTransaction(Transaction tx);
+    void logTransaction(Transaction tx);
 }

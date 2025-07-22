@@ -4,6 +4,7 @@ import com.glasswallet.transaction.enums.CurrencyType;
 import com.glasswallet.transaction.enums.TransactionStatus;
 import com.glasswallet.transaction.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
         @UniqueConstraint(columnNames = {"user_id", "platform_id", "transaction_Id"})
 })
 @Builder
+@AllArgsConstructor
 public class Transaction {
     @Id
     @Column(name = "transaction_Id")
@@ -27,22 +29,28 @@ public class Transaction {
     @JoinColumn(name = "user_id", nullable = false)
     private String senderId;
 
+    @Column(name = "receiver_id",   nullable = false)
+    private String receiverId;
+
     @JoinColumn(name = "platform_id", nullable = false)
     private String platformId;
 
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     @Column(name = "amount",  nullable = false)
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     private CurrencyType currency;
 
-    @Column(name = "receiver_id",   nullable = false)
-    private String receiverId;
-
+    @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
     private Instant timestamp;
 
-
+    private boolean onChain;
+    private String suiTxHash;
+    private BigDecimal gasFee;
+    private String direction;
 }

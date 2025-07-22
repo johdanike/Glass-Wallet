@@ -19,4 +19,5 @@ public class TransferRequest {
     private String currency;
     private String reference;
     private String companyId;
+    private boolean isCrypto;
 }

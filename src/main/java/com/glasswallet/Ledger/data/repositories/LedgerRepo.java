@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-
 public interface LedgerRepo extends CrudRepository<LedgerEntry, UUID> {
     List<LedgerEntry> findByWallet(Wallet wallet);
 
