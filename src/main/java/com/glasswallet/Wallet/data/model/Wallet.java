@@ -1,8 +1,16 @@
 package com.glasswallet.Wallet.data.model;
 
+import com.glasswallet.Ledger.data.model.LedgerEntry;
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.Wallet.enums.WalletStatus;
 import com.glasswallet.Wallet.enums.WalletType;
+import com.glasswallet.platform.data.repositories.PlatformUserRepository;
+import com.glasswallet.transaction.data.models.Transaction;
+import com.glasswallet.transaction.enums.TransactionType;
+import com.glasswallet.transaction.services.interfaces.Bank;
+import com.glasswallet.transaction.services.interfaces.OffRampProtocol;
+import com.glasswallet.transaction.services.interfaces.OnRampProtocol;
+import com.glasswallet.transaction.services.interfaces.PaymentGateway;
 import com.glasswallet.user.data.models.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,8 +24,9 @@ import java.util.UUID;
 @Setter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "wallets")
 public class Wallet {
 
@@ -38,7 +47,7 @@ public class Wallet {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "wallet_type", nullable = false)
-    private WalletType walletType; // FIAT or CRYPTO
+    private WalletType walletType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency_type", nullable = false)
@@ -53,5 +62,6 @@ public class Wallet {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 
 }

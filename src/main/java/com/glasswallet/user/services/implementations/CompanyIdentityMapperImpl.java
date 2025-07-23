@@ -28,8 +28,8 @@ public class CompanyIdentityMapperImpl implements CompanyIdentityMapper {
         User user = platformUser.getUser();
         return GlassUser.builder()
                 .id(user.getId())
-                .companyId(Long.parseLong(platformUser.getCompanyId()))
-                .companyUserId(Long.parseLong(platformUser.getCompanyUserId()))
+                .companyId(Long.parseLong(platformUser.getPlatformId()))
+                .companyUserId(Long.parseLong(platformUser.getPlatformUserId()))
                 .build();
     }
 }

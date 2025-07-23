@@ -34,8 +34,8 @@ public class EnumTokenVerifier {
         Claims claims = claimsJws.getBody();
 
         PlatformUser platformUser = new PlatformUser();
-        platformUser.setCompanyId(claims.get("companyId", String.class));
-        platformUser.setCompanyUserId(claims.get("companyUserId", String.class));
+        platformUser.setPlatformId(claims.get("companyId", String.class));
+        platformUser.setPlatformUserId(claims.get("companyUserId", String.class));
 
         return platformUser;
     }

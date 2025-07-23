@@ -1,13 +1,19 @@
 package com.glasswallet.platform.data.repositories;
 
 import com.glasswallet.platform.data.models.PlatformUser;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface PlatformUserRepository extends JpaRepository<PlatformUser, UUID> {
-    Optional<PlatformUser> findByCompanyIdAndCompanyUserId(String companyId, String companyUserId);
+    Optional<PlatformUser> findByPlatformIdAndPlatformUserId(String platformId, String platformUserId);
 
-    boolean existsByCompanyIdAndCompanyUserId(String companyId, String companyUserId);
+    boolean existsByPlatformIdAndPlatformUserId(String platformId, String platformUserId);
+    @Query("SELECT p FROM PlatformUser p WHERE p.id = :id")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<PlatformUser> findByIdWithPessimisticLock(UUID id);
 }

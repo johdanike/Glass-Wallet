@@ -1,18 +1,28 @@
 package com.glasswallet.Ledger.service.interfaces;
 
-import com.glasswallet.Ledger.dtos.request.BulkDisbursementRequest;
-import com.glasswallet.Ledger.dtos.request.DepositRequest;
-import com.glasswallet.Ledger.dtos.request.TransferRequest;
-import com.glasswallet.Ledger.dtos.request.WithdrawalRequest;
-import com.glasswallet.Ledger.dtos.response.BulkDisbursementResponse;
-import com.glasswallet.Ledger.dtos.response.DepositResponse;
-import com.glasswallet.Ledger.dtos.response.TransferResponse;
-import com.glasswallet.Ledger.dtos.response.WithdrawalResponse;
+import com.glasswallet.Ledger.data.model.LedgerEntry;
+import com.glasswallet.Ledger.dtos.requests.LogTransactionRequest;
+import com.glasswallet.Ledger.dtos.responses.SuiResponse;
+import com.glasswallet.Wallet.enums.WalletCurrency;
+import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
+import com.glasswallet.transaction.dtos.request.DepositRequest;
+import com.glasswallet.transaction.dtos.request.TransferRequest;
+import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
+import com.glasswallet.transaction.enums.TransactionType;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 public interface LedgerService {
-    DepositResponse recordDeposit(DepositRequest request);
-    WithdrawalResponse recordWithdrawal(WithdrawalRequest request);
-    TransferResponse recordTransfer(TransferRequest request);
-    BulkDisbursementResponse recordBulkDisbursement(BulkDisbursementRequest request);
 
+    LedgerEntry logDeposit(DepositRequest request);
+
+    LedgerEntry logWithdrawal(WithdrawalRequest request);
+
+    List<LedgerEntry> logTransfer(TransferRequest request);
+
+    List<LedgerEntry> logBulkDisbursement(BulkDisbursementRequest request);
+
+    LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest);
 }

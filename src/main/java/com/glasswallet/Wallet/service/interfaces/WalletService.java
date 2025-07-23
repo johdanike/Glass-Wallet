@@ -7,6 +7,10 @@ import com.glasswallet.Wallet.dtos.response.WalletBalanceResponse;
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.Wallet.exceptions.InvalidCredentialsException;
 import com.glasswallet.Wallet.utils.PaymentResult;
+import com.glasswallet.transaction.data.models.Transaction;
+import com.glasswallet.transaction.dtos.response.DepositResponse;
+import com.glasswallet.transaction.dtos.response.WithdrawalResponse;
+import com.glasswallet.transaction.enums.TransactionType;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.dtos.responses.WalletProfileDto;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +25,18 @@ public interface WalletService {
     CreateWalletResponse createWalletForUser(UUID userId, CreateWalletRequest request);
 
     void createWalletIfNotExists(User user);
+
     CreateWalletResponse createWallet(User user);
+
     List<Wallet> getWallets(UUID userId);
 
-    void depositFiat(String recipientIdentifier, BigDecimal amount);
-    void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) throws InvalidCredentialsException;
+    DepositResponse depositFiat(UUID receiverId, UUID companyId, BigDecimal amount, String reference);
 
-    void depositSui(String recipientIdentifier, BigDecimal amount);
-    void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) throws InvalidCredentialsException;
+    DepositResponse depositSui(UUID receiverId, UUID companyId, BigDecimal amount, String reference);
+
+    WithdrawalResponse withdrawFiat(UUID senderId, UUID companyId, BigDecimal amount, String reference);
+
+    WithdrawalResponse withdrawSui(UUID senderId, UUID companyId, BigDecimal amount, String reference);
 
     WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) throws InvalidCredentialsException;
 
@@ -36,4 +44,6 @@ public interface WalletService {
     PaymentResult receivePayment(String recipientIdentifier, WalletCurrency currency, BigDecimal amount);
 
     WalletProfileDto getProfile(UUID id);
+
+    Wallet getWalletById(UUID walletId);
 }

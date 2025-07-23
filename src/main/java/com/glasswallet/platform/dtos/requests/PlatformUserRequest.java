@@ -11,4 +11,6 @@ public class PlatformUserRequest {
     private String lastName;
     private String phoneNumber;
     private String userName;
+    private String currency;
+    private String token;
 }

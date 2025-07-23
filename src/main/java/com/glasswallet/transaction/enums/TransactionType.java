@@ -6,7 +6,11 @@ import lombok.Getter;
 public enum TransactionType {
     DEPOSIT("deposit"),
     WITHDRAWAL("withdrawal"),
-    TRANSFER("transfer");
+//    TRANSFER("transfer"),
+    FUNDING("funding"),
+    FIAT_TRANSFER("fiat_transfer"),
+    CRYPTO_TRANSFER("crypto_transfer"),
+    BULK_DISBURSEMENT("bulk_disbursement"),;
 
 
     private final String type;
@@ -14,5 +18,4 @@ public enum TransactionType {
     TransactionType(String type) {
         this.type = type;
     }
-
 }

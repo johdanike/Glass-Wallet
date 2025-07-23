@@ -10,8 +10,6 @@ import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -43,8 +41,5 @@ public class LedgerEntry {
     private Instant timestamp;
     @ManyToOne
     private Wallet wallet;
-
-
-
 
 }
