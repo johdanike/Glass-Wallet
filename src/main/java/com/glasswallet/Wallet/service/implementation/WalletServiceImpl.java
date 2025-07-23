@@ -1,6 +1,5 @@
 package com.glasswallet.Wallet.service.implementation;
 
-import com.glasswallet.Ledger.service.interfaces.LedgerService;
 import com.glasswallet.Wallet.data.model.Wallet;
 import com.glasswallet.Wallet.data.repositories.WalletRepository;
 import com.glasswallet.Wallet.dtos.requests.CreateWalletRequest;
@@ -9,14 +8,19 @@ import com.glasswallet.Wallet.dtos.response.WalletBalanceResponse;
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.Wallet.enums.WalletStatus;
 import com.glasswallet.Wallet.enums.WalletType;
-import com.glasswallet.Wallet.exceptions.InsufficientBalanceException;
 import com.glasswallet.Wallet.exceptions.WalletNotFoundException;
 import com.glasswallet.Wallet.service.interfaces.WalletResolver;
 import com.glasswallet.Wallet.service.interfaces.WalletService;
 import com.glasswallet.Wallet.utils.PaymentResult;
 import com.glasswallet.Wallet.utils.WalletUtils;
-import com.glasswallet.transaction.data.repositories.TransactionRepository;
+import com.glasswallet.transaction.dtos.request.DepositRequest;
+import com.glasswallet.transaction.dtos.request.TransferRequest;
+import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
+import com.glasswallet.transaction.dtos.response.DepositResponse;
+import com.glasswallet.transaction.dtos.response.TransferResponse;
+import com.glasswallet.transaction.dtos.response.WithdrawalResponse;
 import com.glasswallet.transaction.services.interfaces.SuiRateService;
+import com.glasswallet.transaction.services.interfaces.TransactionService;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.data.repositories.UserRepository;
 import com.glasswallet.user.dtos.responses.WalletProfileDto;
@@ -43,8 +47,9 @@ public class WalletServiceImpl implements WalletService {
     private final SuiRateService suiRateService;
     private final WalletResolver walletResolver;
     private final PasswordEncoder passwordEncoder;
-    private final LedgerService ledgerService;
-    private final TransactionRepository transactionRepository;
+//    private final LedgerService ledgerService;
+//    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
 
     @Override
     public CreateWalletResponse createWalletForUser(UUID userId, CreateWalletRequest request) {
@@ -100,34 +105,89 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void depositFiat(String recipientIdentifier, BigDecimal amount) {
-        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
-                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
-        wallet.setBalance(wallet.getBalance().add(amount));
-        walletRepository.save(wallet);
+    public DepositResponse depositFiat(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
+        return transactionService.processDeposit(DepositRequest.builder()
+                .receiverId(receiverId)
+                .companyId(companyId)
+                .currency(WalletCurrency.NGN)
+                .amount(amount)
+                .reference(reference)
+                .build());
     }
 
     @Override
-    public void depositSui(String recipientIdentifier, BigDecimal amount) {
-        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
-                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
-        wallet.setBalance(wallet.getBalance().add(amount));
-        walletRepository.save(wallet);
+    public DepositResponse depositSui(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
+        return transactionService.processDeposit(DepositRequest.builder()
+                .receiverId(receiverId)
+                .companyId(companyId)
+                .currency(WalletCurrency.SUI)
+                .amount(amount)
+                .reference(reference)
+                .build());
     }
 
     @Override
-    public void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) {
-        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
-                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
-        verifyPassword(wallet.getUser(), password);
-
-        if (wallet.getBalance().compareTo(amount) < 0) {
-            throw new InsufficientBalanceException("Insufficient fiat balance");
-        }
-
-        wallet.setBalance(wallet.getBalance().subtract(amount));
-        walletRepository.save(wallet);
+    public WithdrawalResponse withdrawFiat(UUID senderId, UUID companyId, BigDecimal amount, String reference) {
+        return transactionService.processWithdrawal(WithdrawalRequest.builder()
+                .senderId(senderId.toString())
+                .companyId(String.valueOf(companyId))
+                .currency(WalletCurrency.NGN.name())
+                .amount(amount)
+                .reference(reference)
+                .build());
     }
+
+    @Override
+    public WithdrawalResponse withdrawSui(UUID senderId, UUID companyId, BigDecimal amount, String reference) {
+        return transactionService.processWithdrawal(WithdrawalRequest.builder()
+                .senderId(senderId.toString())
+                .companyId(String.valueOf(companyId))
+                .currency(WalletCurrency.SUI.name())
+                .amount(amount)
+                .reference(reference)
+                .build());
+    }
+
+    public TransferResponse transfer(UUID senderId, UUID receiverId, UUID companyId, BigDecimal amount, WalletCurrency currency, String reference) {
+        return transactionService.processTransfer(TransferRequest.builder()
+                .senderId(senderId.toString())
+                .receiverId(receiverId.toString())
+                .companyId(companyId.toString())
+                .amount(amount)
+                .currency(currency.name())
+                .reference(reference)
+                .build());
+    }
+
+//    @Override
+//    public void depositFiat(String recipientIdentifier, BigDecimal amount) {
+//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
+//                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
+//        wallet.setBalance(wallet.getBalance().add(amount));
+//        walletRepository.save(wallet);
+//    }
+
+//    @Override
+//    public void depositSui(String recipientIdentifier, BigDecimal amount) {
+//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
+//                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
+//        wallet.setBalance(wallet.getBalance().add(amount));
+//        walletRepository.save(wallet);
+//    }
+
+//    @Override
+//    public void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) {
+//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
+//                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
+//        verifyPassword(wallet.getUser(), password);
+//
+//        if (wallet.getBalance().compareTo(amount) < 0) {
+//            throw new InsufficientBalanceException("Insufficient fiat balance");
+//        }
+//
+//        wallet.setBalance(wallet.getBalance().subtract(amount));
+//        walletRepository.save(wallet);
+//    }
 
     private void verifyPassword(User user, String password) {
         if (user.getPassword() == null || !passwordEncoder.matches(password, user.getPassword())) {
@@ -135,19 +195,19 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
-    @Override
-    public void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) {
-        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
-                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
-        verifyPassword(wallet.getUser(), password);
-
-        if (wallet.getBalance().compareTo(amount) < 0) {
-            throw new InsufficientBalanceException("Insufficient SUI balance");
-        }
-
-        wallet.setBalance(wallet.getBalance().subtract(amount));
-        walletRepository.save(wallet);
-    }
+//    @Override
+//    public void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) {
+//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
+//                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
+//        verifyPassword(wallet.getUser(), password);
+//
+//        if (wallet.getBalance().compareTo(amount) < 0) {
+//            throw new InsufficientBalanceException("Insufficient SUI balance");
+//        }
+//
+//        wallet.setBalance(wallet.getBalance().subtract(amount));
+//        walletRepository.save(wallet);
+//    }
 
     @Override
     public WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) {
@@ -184,22 +244,34 @@ public class WalletServiceImpl implements WalletService {
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
 
-        Wallet recipientWallet = walletResolver.resolveWallet(recipientIdentifier, currency)
+        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, currency)
                 .orElseThrow(() -> new WalletNotFoundException("Recipient wallet not found"));
 
-        if (recipientWallet.getStatus() != WalletStatus.ACTIVE) {
+        if (wallet.getStatus() != WalletStatus.ACTIVE) {
             throw new IllegalStateException("Recipient wallet is inactive");
         }
 
-        recipientWallet.setBalance(recipientWallet.getBalance().add(amount));
-        walletRepository.save(recipientWallet);
+        buildAndCreateDepositRequest(currency, amount, wallet);
 
         return new PaymentResult(
-                recipientWallet.getId(),
-                recipientWallet.getCurrencyType(),
+                wallet.getId(),
+                currency,
                 amount
         );
     }
+
+    private void buildAndCreateDepositRequest(WalletCurrency currency, BigDecimal amount, Wallet wallet) {
+        DepositRequest request = DepositRequest.builder()
+                .receiverId(wallet.getUser().getId())
+                .companyId(UUID.fromString(wallet.getUser().getPlatformId()))
+                .currency(currency)
+                .amount(amount)
+                .reference(String.valueOf(wallet.getId()))
+                .build();
+
+        transactionService.processDeposit(request);
+    }
+
 
     @Override
     public WalletProfileDto getProfile(UUID id) {

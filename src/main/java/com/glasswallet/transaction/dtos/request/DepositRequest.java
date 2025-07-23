@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.glasswallet.Ledger.utils.UserDeserializer;
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.user.data.models.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -16,6 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class DepositRequest {
     @JsonDeserialize(using = UserDeserializer.class)
     private UUID senderId;
