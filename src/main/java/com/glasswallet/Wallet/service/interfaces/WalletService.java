@@ -26,6 +26,7 @@ public interface WalletService {
 
     void createWalletIfNotExists(User user);
 
+
     CreateWalletResponse createWallet(User user);
 
     List<Wallet> getWallets(UUID userId);
