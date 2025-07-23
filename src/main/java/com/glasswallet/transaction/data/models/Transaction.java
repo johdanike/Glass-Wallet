@@ -1,5 +1,6 @@
 package com.glasswallet.transaction.data.models;
 
+import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.transaction.enums.CurrencyType;
 import com.glasswallet.transaction.enums.TransactionStatus;
 import com.glasswallet.transaction.enums.TransactionType;
@@ -42,7 +43,7 @@ public class Transaction {
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    private CurrencyType currency;
+    private WalletCurrency currency;
 
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;

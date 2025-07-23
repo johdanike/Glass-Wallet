@@ -23,13 +23,17 @@ public interface WalletService {
     CreateWalletResponse createWalletForUser(UUID userId, CreateWalletRequest request);
 
     void createWalletIfNotExists(User user);
+
     CreateWalletResponse createWallet(User user);
+
     List<Wallet> getWallets(UUID userId);
 
     void depositFiat(String recipientIdentifier, BigDecimal amount);
+
     void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) throws InvalidCredentialsException;
 
     void depositSui(String recipientIdentifier, BigDecimal amount);
+
     void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) throws InvalidCredentialsException;
 
     WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) throws InvalidCredentialsException;
@@ -38,8 +42,6 @@ public interface WalletService {
     PaymentResult receivePayment(String recipientIdentifier, WalletCurrency currency, BigDecimal amount);
 
     WalletProfileDto getProfile(UUID id);
-    Wallet getWalletById(UUID walletId);
 
-    @Transactional
-    Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, WalletCurrency currency, String reference, BigDecimal amount);
+    Wallet getWalletById(UUID walletId);
 }

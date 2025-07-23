@@ -1,4 +1,4 @@
-package com.glasswallet.Ledger.dtos.response;
+package com.glasswallet.transaction.dtos.response;
 
 import lombok.Getter;
 import lombok.Setter;

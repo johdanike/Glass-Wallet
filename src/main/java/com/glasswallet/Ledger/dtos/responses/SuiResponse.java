@@ -1,4 +1,4 @@
-package com.glasswallet.Ledger.dtos.response;
+package com.glasswallet.Ledger.dtos.responses;
 
 import lombok.Data;
 
@@ -8,4 +8,6 @@ import java.math.BigDecimal;
 public class SuiResponse {
     private String txHash;
     private BigDecimal gasFee;
+    private boolean status;
+    private String message;
 }

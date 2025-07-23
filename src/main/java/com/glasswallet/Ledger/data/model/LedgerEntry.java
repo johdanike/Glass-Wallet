@@ -3,7 +3,6 @@ package com.glasswallet.Ledger.data.model;
 import com.glasswallet.Ledger.enums.LedgerType;
 import com.glasswallet.Ledger.enums.Status;
 import com.glasswallet.Wallet.data.model.Wallet;
-import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.user.data.models.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,8 +10,6 @@ import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity

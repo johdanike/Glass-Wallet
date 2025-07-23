@@ -2,78 +2,54 @@ package com.glasswallet.Ledger.service.implementation;
 
 import com.glasswallet.Ledger.data.model.LedgerEntry;
 import com.glasswallet.Ledger.data.repositories.LedgerRepo;
-import com.glasswallet.Ledger.dtos.request.BulkDisbursementRequest;
-import com.glasswallet.Ledger.dtos.request.DepositRequest;
-import com.glasswallet.Ledger.dtos.request.TransferRequest;
-import com.glasswallet.Ledger.dtos.request.WithdrawalRequest;
-import com.glasswallet.Ledger.dtos.response.BulkDisbursementResponse;
-import com.glasswallet.Ledger.dtos.response.DepositResponse;
-import com.glasswallet.Ledger.dtos.response.TransferResponse;
-import com.glasswallet.Ledger.dtos.response.WithdrawalResponse;
+import com.glasswallet.Ledger.dtos.requests.LogTransactionRequest;
 import com.glasswallet.Ledger.enums.LedgerType;
 import com.glasswallet.Ledger.enums.Status;
 import com.glasswallet.Ledger.service.interfaces.LedgerOrchestrator;
 import com.glasswallet.Ledger.service.interfaces.LedgerService;
-import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.transaction.data.repositories.TransactionRepository;
+import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
+import com.glasswallet.transaction.dtos.request.DepositRequest;
+import com.glasswallet.transaction.dtos.request.TransferRequest;
+import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
+import com.glasswallet.user.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 
 public class LedgerServiceImpl implements LedgerService {
 
+    private static final Logger log = LogManager.getLogger(LedgerServiceImpl.class);
     private final LedgerRepo ledgerRepo;
     private final TransactionRepository transactionRepository;
     private final LedgerOrchestrator ledgerOrchestrator;
-
+    private final UserRepository userRepository;
 
     @Override
-    public DepositResponse recordDeposit(DepositRequest request) {
+    public LedgerEntry logDeposit(DepositRequest request) {
         LedgerEntry entry = createLedgerEntryFromDeposit(request);
+        ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
-
-        DepositResponse response = new DepositResponse();
-        response.setMessage(request.getAmount() + " successfully sent to " + request.getReceiverId());
-        return response;
+        return ledgerRepo.save(entry);
     }
 
-
     @Override
-    public WithdrawalResponse recordWithdrawal(WithdrawalRequest request) {
+    public LedgerEntry logWithdrawal(WithdrawalRequest request) {
         LedgerEntry entry = createLedgerEntryFromWithdrawal(request);
+        ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
-
-        createLedgerEntryFromWithdrawal(request);
-        WithdrawalResponse response = new WithdrawalResponse();
-        response.setMessage( request.getAmount() + "withdrawn from" + request.getSenderId() +"to" + request.getReceiverId());
-        return response;
-
-    }
-
-    private LedgerEntry createLedgerEntryFromWithdrawal(WithdrawalRequest request) {
-        return LedgerEntry.builder()
-                .senderId( request.getSenderId()  )
-                .companyId( request.getCompanyId() )
-                .userId( request.getUserId() )
-                .amount(request.getAmount())
-                .currency(request.getCurrency())
-                .receiverId( request.getReceiverId() )
-                .reference(request.getReference())
-                .type(LedgerType.WITHDRAWAL)
-                .status( Status.PENDING )
-                .timestamp( Instant.now() )
-                .build();
+        return entry;
     }
 
     @Override
-    public TransferResponse recordTransfer(TransferRequest request) {
+    public List<LedgerEntry> logTransfer(TransferRequest request) {
         LedgerType outType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_OUT : LedgerType.TRANSFER_OUT;
         LedgerType inType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_IN : LedgerType.TRANSFER_IN;
 
@@ -106,61 +82,51 @@ public class LedgerServiceImpl implements LedgerService {
         ledgerOrchestrator.recordLedgerAndTransaction(sendEntry);
         ledgerOrchestrator.recordLedgerAndTransaction(receiverEntry);
 
-//        logTransaction(List.of(sendEntry, receiverEntry));
-        TransferResponse response = new TransferResponse();
-        response.setMessage(request.getAmount() +
-                " transferred from " + request.getSenderId() +
-                " to " + request.getReceiverId() +
-                " with reference " + request.getReference());
-
-        return response;
-
+        ledgerRepo.saveAll(List.of(sendEntry, receiverEntry));
+        return List.of(sendEntry, receiverEntry);
     }
 
     @Override
-    public BulkDisbursementResponse recordBulkDisbursement(BulkDisbursementRequest request) {
-        List<TransferResponse> results = new ArrayList<>();
-
-        for (TransferRequest transfer : request.getDisbursements()) {
-            TransferResponse transferResponse = recordTransfer(transfer);
-            results.add(transferResponse);
-        }
-
-        BulkDisbursementResponse response = new BulkDisbursementResponse();
-        response.setTransferResults(results);
-        response.setMessage(results.size() + " transfers processed successfully.");
-
-        return response;
+    public List<LedgerEntry> logBulkDisbursement(BulkDisbursementRequest request) {
+        return List.of();
     }
 
     @Override
-    public void logTransaction(Transaction tx) {
-        transactionRepository.save(tx);
+    public LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest) {
+        return null;
+    }
+
+    private LedgerEntry createLedgerEntryFromDeposit(DepositRequest request) {
+        return LedgerEntry.builder()
+                .companyId(String.valueOf(request.getCompanyId()))
+                .senderId(String.valueOf(request.getSenderId()))
+                .receiverId(String.valueOf(request.getReceiverId()))
+                .amount(request.getAmount())
+                .reference(request.getReference())
+                .type(LedgerType.DEPOSIT)
+                .status(Status.SUCCESSFUL)
+                .currency(String.valueOf(request.getCurrency()))
+                .timestamp(Instant.now())
+                .build();
+    }
+
+    private LedgerEntry createLedgerEntryFromWithdrawal(WithdrawalRequest request) {
+        return LedgerEntry.builder()
+                .senderId( request.getSenderId()  )
+                .companyId( request.getCompanyId() )
+                .userId( request.getUserId() )
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .receiverId( request.getReceiverId() )
+                .reference(request.getReference())
+                .type(LedgerType.WITHDRAWAL)
+                .status( Status.PENDING )
+                .timestamp( Instant.now() )
+                .build();
     }
 
     private void logTransaction(LedgerEntry entry) {
         ledgerRepo.save(entry);
     }
-
-    private void logTransaction(List<LedgerEntry> entries) {
-        ledgerRepo.saveAll(entries);
-    }
-
-    private LedgerEntry createLedgerEntryFromDeposit(DepositRequest request) {
-        return LedgerEntry.builder()
-                .id(UUID.randomUUID())
-                .userId(request.getUserId())
-                .companyId(request.getCompanyId())
-                .senderId(request.getSenderId())
-                .receiverId(request.getReceiverId())
-                .amount(request.getAmount())
-                .reference(request.getReference())
-                .type(LedgerType.DEPOSIT)
-                .status(Status.SUCCESSFUL)
-                .currency(request.getCurrency())
-                .timestamp(Instant.now())
-                .build();
-    }
-
 
 }

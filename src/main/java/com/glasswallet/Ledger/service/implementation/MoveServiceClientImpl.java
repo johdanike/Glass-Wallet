@@ -1,7 +1,9 @@
+// src/main/java/com/glasswallet/Ledger/service/implementation/MoveServiceClientImpl.java
 package com.glasswallet.Ledger.service.implementation;
 
 import com.glasswallet.Ledger.data.model.LedgerEntry;
-import com.glasswallet.Ledger.dtos.response.SuiResponse;
+import com.glasswallet.Ledger.dtos.responses.SuiResponse;
+import com.glasswallet.Ledger.service.interfaces.MoveServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,12 +14,12 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class MoveServiceClientImpl {
+public class MoveServiceClientImpl implements MoveServiceClient {
     private final RestTemplate restTemplate;
     private final String moveServiceUrl = "http://localhost:3000/api/transactions"; // or env/config
 
+    @Override
     public SuiResponse logOnChain(LedgerEntry entry) {
-        // Construct payload
         Map<String, Object> payload = new HashMap<>();
         payload.put("senderId", entry.getSenderId());
         payload.put("receiverId", entry.getReceiverId());
@@ -27,7 +29,6 @@ public class MoveServiceClientImpl {
         payload.put("currency", entry.getCurrency());
         payload.put("type", entry.getType().toString());
 
-        // Send to Node.js
         ResponseEntity<SuiResponse> response = restTemplate.postForEntity(
                 moveServiceUrl,
                 payload,
