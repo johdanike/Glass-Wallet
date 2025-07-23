@@ -28,6 +28,7 @@ import com.glasswallet.user.exceptions.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,10 @@ public class WalletServiceImpl implements WalletService {
 //    private final LedgerService ledgerService;
 //    private final TransactionRepository transactionRepository;
     private final TransactionService transactionService;
+
+    @Value("${wallet_address}")
+    private String defaultSuiWalletAddress;
+
 
     @Override
     public CreateWalletResponse createWalletForUser(UUID userId, CreateWalletRequest request) {
@@ -77,11 +82,11 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void createWalletIfNotExists(User user) {
-        if (walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.NGN)) {
+        if (!walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.NGN)) {
             createFiatWallet(user);
         }
 
-        if (walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.SUI)) {
+        if (!walletRepository.existsByUserAndCurrencyType(user, WalletCurrency.SUI)) {
             createSuiWallet(user);
         }
     }
@@ -293,20 +298,22 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWalletById(UUID walletId) {
-        return null;
+        return walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found with id: " + walletId));
     }
 
     private void createSuiWallet(User user) {
-            Wallet wallet = new Wallet();
-            wallet.setUser(user);
-            wallet.setWalletType(WalletType.CRYPTO);
-            wallet.setCurrencyType(WalletCurrency.SUI);
-            wallet.setWalletAddress("sui_" + UUID.randomUUID().toString().replace("-", "").substring(0, 32));
-            wallet.setTokenSymbol("SUI");
-            wallet.setBalance(BigDecimal.ZERO);
-            wallet.setStatus(WalletStatus.ACTIVE);
-            walletRepository.save(wallet);
+        Wallet wallet = new Wallet();
+        wallet.setUser(user);
+        wallet.setWalletType(WalletType.CRYPTO);
+        wallet.setCurrencyType(WalletCurrency.SUI);
+        wallet.setWalletAddress(defaultSuiWalletAddress);
+        wallet.setTokenSymbol("SUI");
+        wallet.setBalance(BigDecimal.ZERO);
+        wallet.setStatus(WalletStatus.ACTIVE);
+        walletRepository.save(wallet);
     }
+
 
 }
 
