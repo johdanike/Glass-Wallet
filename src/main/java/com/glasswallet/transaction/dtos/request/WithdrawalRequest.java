@@ -1,10 +1,7 @@
 package com.glasswallet.transaction.dtos.request;
 
 import com.glasswallet.user.data.models.User;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -12,6 +9,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WithdrawalRequest {
     private User userId;
     private String senderId;

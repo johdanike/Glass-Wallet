@@ -24,7 +24,7 @@ import java.util.UUID;
 @Setter
 @ToString
 @AllArgsConstructor
-//@NoArgsConstructor
+@Builder
 @Entity
 @RequiredArgsConstructor
 @Table(name = "wallets")

@@ -31,7 +31,7 @@ public class LedgerOrchestratorService implements LedgerOrchestrator {
     public void recordLedgerAndTransaction(LedgerEntry entry) {
         ledgerRepo.save(entry);
 
-        SuiResponse response = moveServiceClient.logOnChain(entry); // this hits Node.js
+        SuiResponse response = moveServiceClient.logOnChain(entry);
 
         String direction = determineDirection(entry);
 

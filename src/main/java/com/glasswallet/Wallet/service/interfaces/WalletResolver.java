@@ -6,5 +6,5 @@ import com.glasswallet.Wallet.enums.WalletCurrency;
 import java.util.Optional;
 
 public interface WalletResolver {
-    Optional<Wallet> resolveWallet(String identifier, WalletCurrency currencyType);
+    Optional<Wallet> resolveWallet(String UserId, WalletCurrency currencyType);
 }

@@ -200,20 +200,6 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
-//    @Override
-//    public void withdrawSui(String recipientIdentifier, BigDecimal amount, String password) {
-//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
-//                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
-//        verifyPassword(wallet.getUser(), password);
-//
-//        if (wallet.getBalance().compareTo(amount) < 0) {
-//            throw new InsufficientBalanceException("Insufficient SUI balance");
-//        }
-//
-//        wallet.setBalance(wallet.getBalance().subtract(amount));
-//        walletRepository.save(wallet);
-//    }
-
     @Override
     public WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) {
         Wallet fiat = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
