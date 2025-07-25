@@ -1,4 +1,4 @@
-package com.glasswallet.transaction.services.implementations;
+package com.glasswallet.transaction.exception;
 
 public class TransactionProcessingException extends Throwable {
     public TransactionProcessingException(String blockchainOperationFailed) {

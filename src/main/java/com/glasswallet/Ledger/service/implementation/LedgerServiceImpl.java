@@ -13,7 +13,6 @@ import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
 import com.glasswallet.transaction.dtos.request.DepositRequest;
 import com.glasswallet.transaction.dtos.request.TransferRequest;
 import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
-import com.glasswallet.user.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +24,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-
 public class LedgerServiceImpl implements LedgerService {
 
     private static final Logger log = LogManager.getLogger(LedgerServiceImpl.class);
@@ -50,24 +48,16 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public LedgerEntry logWithdrawal(WithdrawalRequest request) {
-        // Validate inputs
         if (request.getUserId() == null || request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             log.warn("Invalid withdrawal request: userId or amount is invalid");
             return null;
         }
 
-        // Check balance (example: assume a method in userRepository)
-        BigDecimal balance = userRepository.getBalance(request.getUserId().getId());
-        if (balance == null || balance.compareTo(request.getAmount()) < 0) {
-            log.warn("Insufficient funds for withdrawal: userId={}, amount={}, balance={}",
-                    request.getUserId().getId(), request.getAmount(), balance);
-            return null;
-        }
-
+        // Remove balance check, rely on TransactionServiceImpl
         LedgerEntry entry = createLedgerEntryFromWithdrawal(request);
         ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
-        return entry;
+        return ledgerRepo.save(entry);
     }
 
     @Override
@@ -141,7 +131,25 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest) {
-        return null;
+        if (logTransactionRequest.getAmount() == null || logTransactionRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("Invalid transaction request: amount is invalid");
+            return null;
+        }
+
+        LedgerEntry entry = LedgerEntry.builder()
+                .senderId(String.valueOf(logTransactionRequest.getSenderId()))
+                .receiverId(String.valueOf(logTransactionRequest.getReceiverId()))
+                .companyId(String.valueOf(logTransactionRequest.getCompanyId()))
+                .type(LedgerType.valueOf(logTransactionRequest.getType().name())) // Map TransactionType to LedgerType
+                .status(Status.SUCCESSFUL)
+                .amount(logTransactionRequest.getAmount())
+                .currency(logTransactionRequest.getCurrency().name())
+                .reference(logTransactionRequest.getReferenceId())
+                .timestamp(Instant.now())
+                .build();
+
+        ledgerOrchestrator.recordLedgerAndTransaction(entry);
+        return ledgerRepo.save(entry);
     }
 
     private LedgerEntry createLedgerEntryFromDeposit(DepositRequest request) {
@@ -160,21 +168,22 @@ public class LedgerServiceImpl implements LedgerService {
 
     private LedgerEntry createLedgerEntryFromWithdrawal(WithdrawalRequest request) {
         return LedgerEntry.builder()
-                .senderId( request.getSenderId()  )
-                .companyId( request.getCompanyId() )
-                .userId( request.getUserId() )
+                .senderId(request.getSenderId())
+                .companyId(request.getCompanyId())
+                .userId(request.getUserId())
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .receiverId( request.getReceiverId() )
+                .receiverId(request.getReceiverId())
                 .reference(request.getReference())
                 .type(LedgerType.WITHDRAWAL)
-                .status( Status.PENDING )
-                .timestamp( Instant.now() )
+                .status(Status.PENDING) // Updated to PENDING until confirmed
+                .timestamp(Instant.now())
                 .build();
     }
 
     private void logTransaction(LedgerEntry entry) {
         ledgerRepo.save(entry);
     }
+
 
 }
