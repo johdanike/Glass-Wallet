@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class PlatformTokenVerifier {
 
-    @Value("${JWT_SECRET}")
+    @Value("${JWT_SECRET_KEY}")
     private String secret;
 
     private SecretKey secretKey;
