@@ -9,6 +9,7 @@ import com.glasswallet.Wallet.exceptions.InvalidCredentialsException;
 import com.glasswallet.Wallet.utils.PaymentResult;
 import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.transaction.dtos.response.DepositResponse;
+import com.glasswallet.transaction.dtos.response.TransferResponse;
 import com.glasswallet.transaction.dtos.response.WithdrawalResponse;
 import com.glasswallet.transaction.enums.TransactionType;
 import com.glasswallet.user.data.models.User;
@@ -38,6 +39,8 @@ public interface WalletService {
     WithdrawalResponse withdrawFiat(UUID senderId, UUID companyId, BigDecimal amount, String reference);
 
     WithdrawalResponse withdrawSui(UUID senderId, UUID companyId, BigDecimal amount, String reference);
+
+    TransferResponse transfer(UUID senderId, UUID receiverId, UUID companyId, BigDecimal amount, WalletCurrency currency, String reference);
 
     WalletBalanceResponse getUserWalletBalances(String recipientIdentifier, String password) throws InvalidCredentialsException;
 

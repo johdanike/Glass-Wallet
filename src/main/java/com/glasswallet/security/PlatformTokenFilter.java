@@ -18,12 +18,12 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class EnumTokenFilter extends OncePerRequestFilter {
+public class PlatformTokenFilter extends OncePerRequestFilter {
 
     private final CompanyIdentityMapper identityMapper;
-    private final EnumTokenVerifier tokenVerifier;
+    private final PlatformTokenVerifier tokenVerifier;
 
-    public EnumTokenFilter(CompanyIdentityMapper identityMapper, EnumTokenVerifier tokenVerifier) {
+    public PlatformTokenFilter(CompanyIdentityMapper identityMapper, PlatformTokenVerifier tokenVerifier) {
         this.identityMapper = identityMapper;
         this.tokenVerifier = tokenVerifier;
     }

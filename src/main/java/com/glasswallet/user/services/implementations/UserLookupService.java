@@ -1,6 +1,6 @@
 package com.glasswallet.user.services.implementations;
 
-import com.glasswallet.platform.service.PlatformUserService;
+import com.glasswallet.platform.service.interfaces.PlatformUserService;
 import com.glasswallet.user.data.models.User;
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,10 @@
-package com.glasswallet.platform.service;
+package com.glasswallet.platform.service.implementation;
 
 import com.glasswallet.platform.data.models.PlatformUser;
 import com.glasswallet.platform.data.repositories.PlatformUserRepository;
 import com.glasswallet.platform.dtos.requests.PlatformUserRequest;
 import com.glasswallet.platform.exceptions.NotFoundException;
+import com.glasswallet.platform.service.interfaces.PlatformUserService;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

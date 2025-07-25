@@ -22,6 +22,9 @@ public interface WalletRepository extends JpaRepository<Wallet, UUID> {
     Optional<Wallet> findByAccountNumberAndCurrencyType(String accountNumber, WalletCurrency currencyType);
     Optional<Wallet> findByWalletAddressAndCurrencyType(String walletAddress, WalletCurrency currencyType);
     Optional<Wallet> findByUserAndCurrencyType(User user, WalletCurrency currencyType);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT w FROM Wallet w WHERE w.id = :id AND w.currencyType = :currency")
+    Optional<Wallet> findByIdAndCurrencyTypeWithLock(UUID id, WalletCurrency currency);
 
-
+    Optional<Wallet> findByWalletAddress(String centralSuiWalletAddress);
 }

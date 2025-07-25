@@ -153,6 +153,7 @@ public class WalletServiceImpl implements WalletService {
                 .build());
     }
 
+    @Override
     public TransferResponse transfer(UUID senderId, UUID receiverId, UUID companyId, BigDecimal amount, WalletCurrency currency, String reference) {
         return transactionService.processTransfer(TransferRequest.builder()
                 .senderId(senderId.toString())
@@ -164,35 +165,6 @@ public class WalletServiceImpl implements WalletService {
                 .build());
     }
 
-//    @Override
-//    public void depositFiat(String recipientIdentifier, BigDecimal amount) {
-//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
-//                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
-//        wallet.setBalance(wallet.getBalance().add(amount));
-//        walletRepository.save(wallet);
-//    }
-
-//    @Override
-//    public void depositSui(String recipientIdentifier, BigDecimal amount) {
-//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.SUI)
-//                .orElseThrow(() -> new WalletNotFoundException("SUI wallet not found"));
-//        wallet.setBalance(wallet.getBalance().add(amount));
-//        walletRepository.save(wallet);
-//    }
-
-//    @Override
-//    public void withdrawFiat(String recipientIdentifier, BigDecimal amount, String password) {
-//        Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, WalletCurrency.NGN)
-//                .orElseThrow(() -> new WalletNotFoundException("Fiat wallet not found"));
-//        verifyPassword(wallet.getUser(), password);
-//
-//        if (wallet.getBalance().compareTo(amount) < 0) {
-//            throw new InsufficientBalanceException("Insufficient fiat balance");
-//        }
-//
-//        wallet.setBalance(wallet.getBalance().subtract(amount));
-//        walletRepository.save(wallet);
-//    }
 
     private void verifyPassword(User user, String password) {
         if (user.getPassword() == null || !passwordEncoder.matches(password, user.getPassword())) {
