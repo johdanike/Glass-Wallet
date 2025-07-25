@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<?> getUserWalletProfile(Authentication auth) {
-        GlassUser user = (GlassUser) auth.getPrincipal(); // Set by EnumTokenFilter
+        GlassUser user = (GlassUser) auth.getPrincipal(); // Set by PlatformTokenFilter
         com.glasswallet.user.dtos.responses.WalletProfileDto profile = glassWalletService.getProfile(user.getId());
         return ResponseEntity.ok(profile);
     }

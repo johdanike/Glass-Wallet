@@ -25,7 +25,7 @@ public interface TransactionService {
     BulkDisbursementResponse processBulkDisbursement(BulkDisbursementRequest request);
     List<Transaction> getAllTransactionsForUser(String userId);
     List<Transaction> getTransactionsByCompany(String companyId);
-    Optional<Transaction> getTransactionById(UUID txId);
+    Optional<Transaction> getTransactionId(UUID txId);
 
     @Transactional
     Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, WalletCurrency currency, String reference, BigDecimal amount);

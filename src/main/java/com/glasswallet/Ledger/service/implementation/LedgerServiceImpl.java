@@ -7,6 +7,7 @@ import com.glasswallet.Ledger.enums.LedgerType;
 import com.glasswallet.Ledger.enums.Status;
 import com.glasswallet.Ledger.service.interfaces.LedgerOrchestrator;
 import com.glasswallet.Ledger.service.interfaces.LedgerService;
+import com.glasswallet.platform.data.repositories.PlatformUserRepository;
 import com.glasswallet.transaction.data.repositories.TransactionRepository;
 import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
 import com.glasswallet.transaction.dtos.request.DepositRequest;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -30,10 +32,16 @@ public class LedgerServiceImpl implements LedgerService {
     private final LedgerRepo ledgerRepo;
     private final TransactionRepository transactionRepository;
     private final LedgerOrchestrator ledgerOrchestrator;
-    private final UserRepository userRepository;
+    private final PlatformUserRepository userRepository;
 
     @Override
     public LedgerEntry logDeposit(DepositRequest request) {
+        if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0 ||
+                request.getCompanyId() == null) {
+            log.warn("Invalid deposit request: amount or companyId is invalid");
+            return null;
+        }
+
         LedgerEntry entry = createLedgerEntryFromDeposit(request);
         ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
@@ -42,6 +50,20 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public LedgerEntry logWithdrawal(WithdrawalRequest request) {
+        // Validate inputs
+        if (request.getUserId() == null || request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("Invalid withdrawal request: userId or amount is invalid");
+            return null;
+        }
+
+        // Check balance (example: assume a method in userRepository)
+        BigDecimal balance = userRepository.getBalance(request.getUserId().getId());
+        if (balance == null || balance.compareTo(request.getAmount()) < 0) {
+            log.warn("Insufficient funds for withdrawal: userId={}, amount={}, balance={}",
+                    request.getUserId().getId(), request.getAmount(), balance);
+            return null;
+        }
+
         LedgerEntry entry = createLedgerEntryFromWithdrawal(request);
         ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
@@ -50,12 +72,17 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public List<LedgerEntry> logTransfer(TransferRequest request) {
+        if (request.getSenderId().equals(request.getReceiverId())) {
+            log.warn("Transfer aborted: Sender and receiver IDs are the same: {}", request.getSenderId());
+            return List.of();
+        }
+
         LedgerType outType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_OUT : LedgerType.TRANSFER_OUT;
         LedgerType inType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_IN : LedgerType.TRANSFER_IN;
 
         LedgerEntry sendEntry = LedgerEntry.builder()
                 .userId(request.getUserId())
-                .companyId( request.getCompanyId())
+                .companyId(request.getCompanyId())
                 .senderId(request.getSenderId())
                 .receiverId(request.getReceiverId())
                 .type(outType)
@@ -68,7 +95,7 @@ public class LedgerServiceImpl implements LedgerService {
 
         LedgerEntry receiverEntry = LedgerEntry.builder()
                 .userId(request.getUserId())
-                .companyId( request.getCompanyId())
+                .companyId(request.getCompanyId())
                 .senderId(request.getSenderId())
                 .receiverId(request.getReceiverId())
                 .type(inType)
@@ -88,7 +115,28 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public List<LedgerEntry> logBulkDisbursement(BulkDisbursementRequest request) {
-        return List.of();
+        List<TransferRequest> disbursements = request.getDisbursements();
+        if (disbursements == null) {
+            log.warn("Bulk disbursement request has null disbursements");
+            return List.of();
+        }
+        List<LedgerEntry> entries = request.getDisbursements().stream()
+                .map(disbursement -> LedgerEntry.builder()
+                        .userId(disbursement.getUserId())
+                        .companyId(disbursement.getCompanyId())
+                        .senderId(disbursement.getSenderId())
+                        .receiverId(disbursement.getReceiverId())
+                        .type(LedgerType.BULK_DISBURSEMENT)
+                        .status(Status.SUCCESSFUL)
+                        .amount(disbursement.getAmount())
+                        .currency(disbursement.getCurrency())
+                        .reference(disbursement.getReference())
+                        .timestamp(Instant.now())
+                        .build())
+                .toList();
+
+        entries.forEach(ledgerOrchestrator::recordLedgerAndTransaction);
+        return ledgerRepo.saveAll(entries);
     }
 
     @Override
@@ -98,14 +146,14 @@ public class LedgerServiceImpl implements LedgerService {
 
     private LedgerEntry createLedgerEntryFromDeposit(DepositRequest request) {
         return LedgerEntry.builder()
-                .companyId(String.valueOf(request.getCompanyId()))
-                .senderId(String.valueOf(request.getSenderId()))
-                .receiverId(String.valueOf(request.getReceiverId()))
+                .companyId(request.getCompanyId() != null ? request.getCompanyId().toString() : null)
+                .senderId(request.getSenderId() != null ? request.getSenderId().toString() : null)
+                .receiverId(request.getReceiverId() != null ? request.getReceiverId().toString() : null)
                 .amount(request.getAmount())
                 .reference(request.getReference())
                 .type(LedgerType.DEPOSIT)
                 .status(Status.SUCCESSFUL)
-                .currency(String.valueOf(request.getCurrency()))
+                .currency(request.getCurrency() != null ? request.getCurrency().toString() : null)
                 .timestamp(Instant.now())
                 .build();
     }

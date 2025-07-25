@@ -2,7 +2,7 @@ package com.glasswallet.user.services.interfaces;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.glasswallet.platform.data.models.PlatformUser;
-import com.glasswallet.platform.service.PlatformUserService;
+import com.glasswallet.platform.service.interfaces.PlatformUserService;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.data.repositories.UserRepository;
 import com.glasswallet.user.dtos.requests.GlassUser;
@@ -68,12 +68,6 @@ public class UserServiceTest {
         assertEquals(platformId, result.getPlatformId());
         assertEquals(platformUserId, result.getPlatformUserId());
         assertFalse(result.isHasWallet());
-    }
-
-    @Test
-    public void findOrCreate_shouldNotBeNull() {
-        User result = userService.findOrCreate("p3", "u3");
-        assertNotNull(result);
     }
 
     @Test

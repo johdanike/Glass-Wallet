@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,4 +17,5 @@ public interface PlatformUserRepository extends JpaRepository<PlatformUser, UUID
     @Query("SELECT p FROM PlatformUser p WHERE p.id = :id")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<PlatformUser> findByIdWithPessimisticLock(UUID id);
+    BigDecimal getBalance(UUID id);
 }

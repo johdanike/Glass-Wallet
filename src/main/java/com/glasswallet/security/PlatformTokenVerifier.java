@@ -13,9 +13,9 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class EnumTokenVerifier {
+public class PlatformTokenVerifier {
 
-    @Value("${jwt_secrets.enum_token_secret}")
+    @Value("${JWT_SECRET}")
     private String secret;
 
     private SecretKey secretKey;
