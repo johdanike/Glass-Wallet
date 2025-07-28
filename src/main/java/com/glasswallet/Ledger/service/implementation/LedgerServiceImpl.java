@@ -53,7 +53,7 @@ public class LedgerServiceImpl implements LedgerService {
             return null;
         }
 
-        // Remove balance check, rely on TransactionServiceImpl
+
         LedgerEntry entry = createLedgerEntryFromWithdrawal(request);
         ledgerOrchestrator.recordLedgerAndTransaction(entry);
         logTransaction(entry);
@@ -62,45 +62,58 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public List<LedgerEntry> logTransfer(TransferRequest request) {
-        if (request.getSenderId().equals(request.getReceiverId())) {
+        if (isSameSenderAndReceiver(request)) {
             log.warn("Transfer aborted: Sender and receiver IDs are the same: {}", request.getSenderId());
             return List.of();
         }
 
-        LedgerType outType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_OUT : LedgerType.TRANSFER_OUT;
-        LedgerType inType = request.isCrypto() ? LedgerType.CRYPTO_TRANSFER_IN : LedgerType.TRANSFER_IN;
+        LedgerType outType = resolveLedgerType(request, true);
+        LedgerType inType = resolveLedgerType(request, false);
 
-        LedgerEntry sendEntry = LedgerEntry.builder()
+        LedgerEntry senderEntry = buildLedgerEntry(request, outType);
+        LedgerEntry receiverEntry = buildLedgerEntry(request, inType);
+
+        recordLedgerEntries(senderEntry, receiverEntry);
+
+        return List.of(senderEntry, receiverEntry);
+    }
+
+
+    private boolean isSameSenderAndReceiver(TransferRequest request) {
+        return request.getSenderId().equals(request.getReceiverId());
+    }
+
+
+    private LedgerType resolveLedgerType(TransferRequest request, boolean isSender) {
+        if (request.isCrypto()) {
+            return isSender ? LedgerType.CRYPTO_TRANSFER_OUT : LedgerType.CRYPTO_TRANSFER_IN;
+        } else {
+            return isSender ? LedgerType.TRANSFER_OUT : LedgerType.TRANSFER_IN;
+        }
+    }
+
+
+    private LedgerEntry buildLedgerEntry(TransferRequest request, LedgerType type) {
+        return LedgerEntry.builder()
                 .userId(request.getUserId())
                 .companyId(request.getCompanyId())
                 .senderId(request.getSenderId())
                 .receiverId(request.getReceiverId())
-                .type(outType)
+                .type(type)
                 .status(Status.SUCCESSFUL)
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
                 .reference(request.getReference())
                 .timestamp(Instant.now())
                 .build();
+    }
 
-        LedgerEntry receiverEntry = LedgerEntry.builder()
-                .userId(request.getUserId())
-                .companyId(request.getCompanyId())
-                .senderId(request.getSenderId())
-                .receiverId(request.getReceiverId())
-                .type(inType)
-                .status(Status.SUCCESSFUL)
-                .amount(request.getAmount())
-                .currency(request.getCurrency())
-                .reference(request.getReference())
-                .timestamp(Instant.now())
-                .build();
 
-        ledgerOrchestrator.recordLedgerAndTransaction(sendEntry);
-        ledgerOrchestrator.recordLedgerAndTransaction(receiverEntry);
-
-        ledgerRepo.saveAll(List.of(sendEntry, receiverEntry));
-        return List.of(sendEntry, receiverEntry);
+    private void recordLedgerEntries(LedgerEntry... entries) {
+        for (LedgerEntry entry : entries) {
+            ledgerOrchestrator.recordLedgerAndTransaction(entry);
+        }
+        ledgerRepo.saveAll(List.of(entries));
     }
 
     @Override
@@ -110,24 +123,37 @@ public class LedgerServiceImpl implements LedgerService {
             log.warn("Bulk disbursement request has null disbursements");
             return List.of();
         }
-        List<LedgerEntry> entries = request.getDisbursements().stream()
-                .map(disbursement -> LedgerEntry.builder()
-                        .userId(disbursement.getUserId())
-                        .companyId(disbursement.getCompanyId())
-                        .senderId(disbursement.getSenderId())
-                        .receiverId(disbursement.getReceiverId())
-                        .type(LedgerType.BULK_DISBURSEMENT)
-                        .status(Status.SUCCESSFUL)
-                        .amount(disbursement.getAmount())
-                        .currency(disbursement.getCurrency())
-                        .reference(disbursement.getReference())
-                        .timestamp(Instant.now())
-                        .build())
+
+        List<LedgerEntry> entries = disbursements.stream()
+                .map(this::buildBulkDisbursementEntry)
                 .toList();
 
-        entries.forEach(ledgerOrchestrator::recordLedgerAndTransaction);
-        return ledgerRepo.saveAll(entries);
+        recordAndSaveEntries(entries);
+        return entries;
     }
+
+
+    private LedgerEntry buildBulkDisbursementEntry(TransferRequest disbursement) {
+        return LedgerEntry.builder()
+                .userId(disbursement.getUserId())
+                .companyId(disbursement.getCompanyId())
+                .senderId(disbursement.getSenderId())
+                .receiverId(disbursement.getReceiverId())
+                .type(LedgerType.BULK_DISBURSEMENT)
+                .status(Status.SUCCESSFUL)
+                .amount(disbursement.getAmount())
+                .currency(disbursement.getCurrency())
+                .reference(disbursement.getReference())
+                .timestamp(Instant.now())
+                .build();
+    }
+
+
+    private void recordAndSaveEntries(List<LedgerEntry> entries) {
+        entries.forEach(ledgerOrchestrator::recordLedgerAndTransaction);
+        ledgerRepo.saveAll(entries);
+    }
+
 
     @Override
     public LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest) {
