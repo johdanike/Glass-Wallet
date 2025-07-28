@@ -63,5 +63,7 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "pin", nullable = false)
+    private String pin;
 
 }

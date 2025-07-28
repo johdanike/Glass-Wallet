@@ -30,7 +30,7 @@ public class UserServiceTest {
     public void setup() {
         userRepository = mock(UserRepository.class);
         platformUserService = mock(PlatformUserService.class);
-        userService = new UserServiceImpl(userRepository);
+//        userService = new UserServiceImpl(userRepository);
         userLookupService = new UserLookupService(platformUserService);
         identityMapper = new CompanyIdentityMapperImpl();
     }

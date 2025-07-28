@@ -146,7 +146,6 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Receiver not found: " + receiverId);
         }
 
-        // Reconcile balances and log ledger entries via transact
         transact(senderId, receiverId, companyId,
                 currency == WalletCurrency.SUI ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER,
                 currency, request.getReference(), request.getAmount());
