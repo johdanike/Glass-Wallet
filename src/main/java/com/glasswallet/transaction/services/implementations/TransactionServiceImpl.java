@@ -365,7 +365,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = logOnChainAndSaveTransaction(type, ledgerEntries, senderId, receiverId);
         transactionRepository.saveAll(transactions);
 
-        return transactions.get(0); // Return the first transaction for consistency
+        return transactions.get(0);
     }
     private PlatformUser getPlatformUserWithLockOrThrow(String userId, String role) {
         PlatformUser user = getPlatformUserWithLock(userId);
