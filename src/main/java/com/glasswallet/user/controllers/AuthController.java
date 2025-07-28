@@ -8,6 +8,7 @@ import com.glasswallet.user.dtos.requests.PinRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -18,6 +19,7 @@ public class AuthController {
 
     private final PlatformUserRepository platformUserRepository;
     private final TransactionServiceImpl transactionService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -25,6 +27,13 @@ public class AuthController {
         try {
             PlatformUser user = platformUserRepository.findByPlatformUserId(request.getUserId().toString())
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            // Password check (assuming user.getUser().getPassword() returns the hash)
+            if (user.getUser() == null || user.getUser().getPassword() == null ||
+                !passwordEncoder.matches(request.getPassword(), user.getUser().getPassword())) {
+                log.warn("Login failed for userId {}: Invalid password", request.getUserId());
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
 
             if (!user.isActivated()) {
                 log.warn("Login failed for userId {}: Wallet not activated", request.getUserId());

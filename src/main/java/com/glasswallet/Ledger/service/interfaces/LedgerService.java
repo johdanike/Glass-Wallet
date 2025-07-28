@@ -4,10 +4,7 @@ import com.glasswallet.Ledger.data.model.LedgerEntry;
 import com.glasswallet.Ledger.dtos.requests.LogTransactionRequest;
 import com.glasswallet.Ledger.dtos.responses.SuiResponse;
 import com.glasswallet.Wallet.enums.WalletCurrency;
-import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
-import com.glasswallet.transaction.dtos.request.DepositRequest;
-import com.glasswallet.transaction.dtos.request.TransferRequest;
-import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
+import com.glasswallet.transaction.dtos.request.*;
 import com.glasswallet.transaction.enums.TransactionType;
 
 import java.math.BigDecimal;
@@ -25,4 +22,6 @@ public interface LedgerService {
     List<LedgerEntry> logBulkDisbursement(BulkDisbursementRequest request);
 
     LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest);
+
+    LedgerEntry logExternalTransfer(ExternalTransferRequest request);
 }
