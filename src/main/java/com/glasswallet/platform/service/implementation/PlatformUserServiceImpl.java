@@ -25,8 +25,17 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     @Override
     @Transactional
     public PlatformUser onboardPlatformUser(PlatformUserRequest request) {
-        Optional<User> user = userRepository.findByEmail(request.getEmail())
-                .or(() -> {
+        User user = findOrCreateUser(request);
+
+        return platformUserRepository.findByPlatformIdAndPlatformUserId(
+                        request.getCompanyId(), request.getCompanyUserId())
+                .orElseGet(() -> createPlatformUser(request, user));
+    }
+
+    // Helper Method 1
+    private User findOrCreateUser(PlatformUserRequest request) {
+        return userRepository.findByEmail(request.getEmail())
+                .orElseGet(() -> {
                     User newUser = new User();
                     newUser.setEmail(request.getEmail());
                     newUser.setFirstName(request.getFirstName());
@@ -38,22 +47,21 @@ public class PlatformUserServiceImpl implements PlatformUserService {
                     newUser.setPreferredCurrency(request.getCurrency());
                     newUser.setOnboarded(true);
                     newUser.setCreatedAt(Instant.now());
-                    userRepository.save(newUser);
-
-                    return Optional.of(newUser);
-                });
-        return platformUserRepository.findByPlatformIdAndPlatformUserId(
-                        request.getCompanyId(), request.getCompanyUserId())
-                .orElseGet(() -> {
-                    PlatformUser platformUser = new PlatformUser();
-                    platformUser.setId(UUID.randomUUID());
-                    platformUser.setPlatformId(request.getCompanyId());
-                    platformUser.setPlatformUserId(request.getCompanyUserId());
-                    platformUser.setUser(user.get());
-                    platformUser.setToken(request.getToken());
-                    return platformUserRepository.save(platformUser);
+                    return userRepository.save(newUser);
                 });
     }
+
+    // Helper Method 2
+    private PlatformUser createPlatformUser(PlatformUserRequest request, User user) {
+        PlatformUser platformUser = new PlatformUser();
+        platformUser.setId(UUID.randomUUID());
+        platformUser.setPlatformId(request.getCompanyId());
+        platformUser.setPlatformUserId(request.getCompanyUserId());
+        platformUser.setUser(user);
+        platformUser.setToken(request.getToken());
+        return platformUserRepository.save(platformUser);
+    }
+
 
     @Override
     public User getUserByPlatformUserId(String companyId, String companyUserId) {
