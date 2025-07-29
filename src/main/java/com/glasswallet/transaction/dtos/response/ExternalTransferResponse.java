@@ -1,18 +1,15 @@
 package com.glasswallet.transaction.dtos.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-public class WithdrawalResponse {
+@Data
+public class ExternalTransferResponse {
     private String message;
     private List<UUID> transactionId;
-    private String transactionIdOnChain;
-    private String status;
     private String platformId;
     private String platformUserId;
+    private String transactionIdOnChain;
 }

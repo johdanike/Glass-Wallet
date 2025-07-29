@@ -20,4 +20,9 @@ public interface PlatformUserRepository extends JpaRepository<PlatformUser, UUID
 
     @Query("SELECT COALESCE(p.balanceSui, 0) + COALESCE(p.balanceFiat, 0) FROM PlatformUser p WHERE p.id = :id")
     BigDecimal getBalance(UUID id);
+
+    boolean existsByGeneratedPlatformUserId(String candidateId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<PlatformUser> findByPlatformUserId(String platformUserId);
 }

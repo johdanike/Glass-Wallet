@@ -5,4 +5,5 @@ import com.glasswallet.company.dtos.responses.CompanySignupResponse;
 
 public interface CompanyService {
     CompanySignupResponse signup(CompanySignupRequest request);
+
 }

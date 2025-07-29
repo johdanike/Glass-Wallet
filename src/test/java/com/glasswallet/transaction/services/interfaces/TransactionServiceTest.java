@@ -275,7 +275,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -353,7 +353,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -375,7 +375,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -690,10 +690,10 @@ public class TransactionServiceTest {
     // Assert: Verify the results
     assertEquals("Bulk disbursement successful.", response.getMessage());
     verify(transactionRepository, times(2)).save(any(Transaction.class));
-    assertEquals(BigDecimal.ZERO, sender.getBalanceSui()); // Sender SUI balance deducted
-    assertEquals(BigDecimal.ZERO, sender.getBalanceFiat()); // Sender NGN balance deducted
-    assertEquals(BigDecimal.valueOf(100), receiver1.getBalanceSui()); // Receiver1 SUI balance updated
-    assertEquals(BigDecimal.valueOf(50), receiver2.getBalanceFiat()); // Receiver2 NGN balance updated
+    assertEquals(BigDecimal.ZERO, sender.getBalanceSui());
+    assertEquals(BigDecimal.ZERO, sender.getBalanceFiat());
+    assertEquals(BigDecimal.valueOf(100), receiver1.getBalanceSui());
+    assertEquals(BigDecimal.valueOf(50), receiver2.getBalanceFiat());
 }
 
     @Test
