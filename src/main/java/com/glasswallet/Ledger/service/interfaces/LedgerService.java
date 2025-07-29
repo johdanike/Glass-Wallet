@@ -15,7 +15,7 @@ public interface LedgerService {
 
     LedgerEntry logDeposit(DepositRequest request);
 
-    LedgerEntry logWithdrawal(WithdrawalRequest request);
+//    LedgerEntry logWithdrawal(WithdrawalRequest request);
 
     List<LedgerEntry> logTransfer(TransferRequest request);
 
@@ -23,5 +23,6 @@ public interface LedgerService {
 
     LedgerEntry logTransaction(LogTransactionRequest logTransactionRequest);
 
-    LedgerEntry logExternalTransfer(ExternalTransferRequest request);
+//    LedgerEntry logExternalTransfer(ExternalTransferRequest request);
+    LedgerEntry logWithdrawal(WithdrawalRequest request, String transactionId, String platformId, String platformUserId);
 }

@@ -14,12 +14,10 @@ import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.transaction.data.repositories.TransactionRepository;
 import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
 import com.glasswallet.transaction.dtos.request.DepositRequest;
-import com.glasswallet.transaction.dtos.request.ExternalTransferRequest;
 import com.glasswallet.transaction.dtos.request.TransferRequest;
 import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
 import com.glasswallet.transaction.dtos.response.BulkDisbursementResponse;
 import com.glasswallet.transaction.dtos.response.DepositResponse;
-import com.glasswallet.transaction.dtos.response.ExternalTransferResponse;
 import com.glasswallet.transaction.dtos.response.TransferResponse;
 import com.glasswallet.transaction.dtos.response.WithdrawalResponse;
 import com.glasswallet.transaction.enums.TransactionStatus;
@@ -30,8 +28,10 @@ import com.glasswallet.user.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -45,16 +45,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-    private static final UUID CENTRAL_POOL_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    @Value("${central.sui.wallet.address}")
+    @Value("${central.pool.id:00000000-0000-0000-0000-000000000001}")
+    private UUID centralPoolId;
+
+    @Value("${central.sui.wallet.address:0x9616a7936669d6276a06fa72edd30d95ae9d67d973ee47d856a830aed06096ba}")
     private String centralSuiWalletAddress;
+
+    @Value("${wallet.withdraw.service.on.sui:https://glass-wallet-listener.onrender.com/api/withdrawSuiCoin}")
+    private String withdrawSuiEndpoint;
 
     private final LedgerService ledgerService;
     private final TransactionRepository transactionRepository;
-    private final MoveServiceClient moveServiceClient;
     private final UserRepository userRepository;
     private final PlatformUserRepository platformUserRepository;
     private final WalletRepository walletRepository;
+    private final RestTemplate restTemplate;
+    private final MoveServiceClient moveServiceClient;
 
     @Override
     @Transactional
@@ -64,13 +70,12 @@ public class TransactionServiceImpl implements TransactionService {
         }
         checkAmountPositive(request.getAmount());
 
-        PlatformUser user = getPlatformUserWithLock(request.getReceiverId());
+        PlatformUser user = getPlatformUserWithLock(request.getReceiverId().toString());
         if (user == null) {
             throw new IllegalArgumentException("Receiver not found: " + request.getReceiverId());
         }
 
-        WalletCurrency currency = WalletCurrency.valueOf(String.valueOf(request.getCurrency()));
-        if (currency == WalletCurrency.SUI) {
+        if (request.getCurrency() == WalletCurrency.SUI) {
             Wallet centralWallet = getCentralSuiWallet();
             centralWallet.setBalance(centralWallet.getBalance().add(request.getAmount()));
             user.setBalanceSui(user.getBalanceSui().add(request.getAmount()));
@@ -81,11 +86,9 @@ public class TransactionServiceImpl implements TransactionService {
             user.setBalanceFiat(user.getBalanceFiat().add(request.getAmount()));
             platformUserRepository.save(centralPool);
         }
-        platformUserRepository.save(user);
-        log.info("Deposit processed for user: {} amount: {} currency: {}", user.getId(), request.getAmount(), currency);
 
         LedgerEntry ledger = ledgerService.logDeposit(request);
-        List<Transaction> transactions = logOnChainAndSaveTransaction(TransactionType.DEPOSIT, List.of(ledger), request.getReceiverId(), null);
+        List<Transaction> transactions = logOnChainAndSaveTransaction(TransactionType.DEPOSIT, List.of(ledger), request.getReceiverId(), null, null);
         transactionRepository.saveAll(transactions);
 
         DepositResponse response = new DepositResponse();
@@ -102,13 +105,12 @@ public class TransactionServiceImpl implements TransactionService {
         }
         checkAmountPositive(request.getAmount());
 
-        PlatformUser user = getPlatformUserWithLock(UUID.fromString(request.getSenderId()));
+        PlatformUser user = getPlatformUserWithLock(request.getSenderId());
         if (user == null) {
             throw new IllegalArgumentException("Sender not found: " + request.getSenderId());
         }
 
-        WalletCurrency currency = WalletCurrency.valueOf(request.getCurrency());
-        if (currency == WalletCurrency.SUI) {
+        if (WalletCurrency.valueOf(request.getCurrency()) == WalletCurrency.SUI) {
             Wallet centralWallet = getCentralSuiWallet();
             validateBalance(centralWallet.getBalance(), request.getAmount(), "Insufficient SUI balance in central wallet.");
             validateBalance(user.getBalanceSui(), request.getAmount(), "Insufficient SUI balance for user.");
@@ -123,17 +125,42 @@ public class TransactionServiceImpl implements TransactionService {
             user.setBalanceFiat(user.getBalanceFiat().subtract(request.getAmount()));
             platformUserRepository.save(centralPool);
         }
-        platformUserRepository.save(user);
-        log.info("Withdrawal processed for user: {} amount: {} currency: {}", user.getId(), request.getAmount(), currency);
 
-        LedgerEntry ledger = ledgerService.logWithdrawal(request);
-        List<Transaction> transactions = logOnChainAndSaveTransaction(TransactionType.WITHDRAWAL, List.of(ledger), UUID.fromString(request.getSenderId()), null);
+        // Call Node.js endpoint for on-chain withdrawal
+        WithdrawalRequest payload = new WithdrawalRequest();
+        payload.setSenderId(user.getPlatformUserId());
+        payload.setAmount(request.getAmount());
+        payload.setExternalWalletAddress(request.getExternalWalletAddress());
+        // Note: Only senderId, amount, and externalWalletAddress are relevant for the Node.js endpoint
+        ResponseEntity<WithdrawalResponse> response = restTemplate.postForEntity(
+                withdrawSuiEndpoint,
+                payload,
+                WithdrawalResponse.class
+        );
+
+        if (!response.getStatusCode().is2xxSuccessful() || !"ok".equals(response.getBody().getStatus())) {
+            throw new RuntimeException("Failed to process withdrawal on chain: " + response.getBody().getMessage());
+        }
+
+        String transactionIdOnChain = response.getBody().getTransactionId().toString();
+        LedgerEntry ledger = ledgerService.logWithdrawal(request, transactionIdOnChain, user.getPlatformId(), user.getPlatformUserId());
+        List<Transaction> transactions = logOnChainAndSaveTransaction(
+                TransactionType.WITHDRAWAL,
+                List.of(ledger),
+                user.getId(),
+                null,
+                request.getExternalWalletAddress()
+        );
         transactionRepository.saveAll(transactions);
 
-        WithdrawalResponse response = new WithdrawalResponse();
-        response.setMessage("Withdrawal successful.");
-        response.setTransactionId(transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
-        return response;
+        WithdrawalResponse withdrawalResponse = new WithdrawalResponse();
+        withdrawalResponse.setMessage("Withdrawal successful.");
+        withdrawalResponse.setTransactionId(transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
+        withdrawalResponse.setTransactionIdOnChain(transactionIdOnChain);
+        withdrawalResponse.setStatus(response.getBody().getStatus());
+        withdrawalResponse.setPlatformId(user.getPlatformId());
+        withdrawalResponse.setPlatformUserId(user.getPlatformUserId());
+        return withdrawalResponse;
     }
 
     @Override
@@ -151,19 +178,27 @@ public class TransactionServiceImpl implements TransactionService {
         UUID receiverId = UUID.fromString(request.getReceiverId());
         UUID companyId = UUID.fromString(request.getCompanyId());
 
-        PlatformUser receiver = getPlatformUserWithLock(UUID.fromString(receiverId.toString()));
+        PlatformUser receiver = getPlatformUserWithLock(receiverId.toString());
         if (receiver == null) {
             throw new IllegalArgumentException("Receiver not found: " + receiverId);
         }
 
-        transact(senderId, receiverId, companyId, currency == WalletCurrency.SUI ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER, currency, request.getReference(), request.getAmount());
+        transact(senderId, receiverId, companyId,
+                currency == WalletCurrency.SUI ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER,
+                currency, request.getReference(), request.getAmount());
 
         List<LedgerEntry> ledgerEntries = ledgerService.logTransfer(request);
         if (ledgerEntries.isEmpty()) {
             throw new IllegalStateException("Failed to log transfer entries");
         }
 
-        List<Transaction> transactions = logOnChainAndSaveTransaction(currency == WalletCurrency.SUI ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER, ledgerEntries, senderId, receiverId);
+        List<Transaction> transactions = logOnChainAndSaveTransaction(
+                currency == WalletCurrency.SUI ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER,
+                ledgerEntries,
+                senderId,
+                receiverId,
+                null
+        );
         transactionRepository.saveAll(transactions);
 
         TransferResponse response = new TransferResponse();
@@ -188,7 +223,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Total amount must equal the sum of individual disbursement amounts");
         }
 
-        PlatformUser sender = getPlatformUserWithLock(UUID.fromString(request.getSenderId()));
+        PlatformUser sender = getPlatformUserWithLock(request.getSenderId());
         if (sender == null) {
             throw new IllegalArgumentException("Sender not found: " + request.getSenderId());
         }
@@ -197,8 +232,11 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal totalFiat = BigDecimal.ZERO;
         for (TransferRequest disbursement : request.getDisbursements()) {
             WalletCurrency curr = WalletCurrency.valueOf(disbursement.getCurrency());
-            if (curr == WalletCurrency.SUI) totalSui = totalSui.add(disbursement.getAmount());
-            else totalFiat = totalFiat.add(disbursement.getAmount());
+            if (curr == WalletCurrency.SUI) {
+                totalSui = totalSui.add(disbursement.getAmount());
+            } else {
+                totalFiat = totalFiat.add(disbursement.getAmount());
+            }
         }
         validateBalance(sender.getBalanceSui(), totalSui, "Insufficient SUI balance for sender.");
         validateBalance(sender.getBalanceFiat(), totalFiat, "Insufficient fiat balance for sender.");
@@ -223,6 +261,7 @@ public class TransactionServiceImpl implements TransactionService {
                 WalletCurrency.SUI.name().equals(ledgerEntries.get(0).getCurrency()) ? TransactionType.CRYPTO_TRANSFER : TransactionType.FIAT_TRANSFER,
                 ledgerEntries,
                 sender.getId(),
+                null,
                 null
         );
         transactionRepository.saveAll(transactions);
@@ -243,59 +282,6 @@ public class TransactionServiceImpl implements TransactionService {
         BulkDisbursementResponse response = new BulkDisbursementResponse();
         response.setMessage("Bulk disbursement successful.");
         response.setTransferResults(transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
-        return response;
-    }
-
-    @Transactional
-    public ExternalTransferResponse processExternalTransfer(ExternalTransferRequest request) {
-        if (request == null || request.getSenderId() == null || request.getExternalWalletAddress() == null) {
-            throw new IllegalArgumentException("External transfer request, sender ID, or external wallet address cannot be null");
-        }
-        checkAmountPositive(request.getAmount());
-
-        PlatformUser sender = getPlatformUserWithLock(request.getSenderId());
-        if (sender == null) {
-            throw new IllegalArgumentException("Sender not found: " + request.getSenderId());
-        }
-
-        WalletCurrency currency = WalletCurrency.valueOf(request.getCurrency());
-        TransactionType type = request.isInbound() ? TransactionType.EXTERNAL_DEPOSIT : TransactionType.EXTERNAL_WITHDRAWAL;
-
-        if (currency == WalletCurrency.SUI) {
-            Wallet centralWallet = getCentralSuiWallet();
-            if (request.isInbound()) {
-                // Receive SUI from external wallet to central pool
-                validateBalance(sender.getBalanceSui(), request.getAmount(), "Insufficient SUI balance for sender.");
-                sender.setBalanceSui(sender.getBalanceSui().subtract(request.getAmount()));
-                centralWallet.setBalance(centralWallet.getBalance().add(request.getAmount()));
-            } else {
-                // Send SUI from central pool to external wallet
-                validateBalance(centralWallet.getBalance(), request.getAmount(), "Insufficient SUI balance in central wallet.");
-                centralWallet.setBalance(centralWallet.getBalance().subtract(request.getAmount()));
-            }
-            walletRepository.save(centralWallet);
-        } else {
-            PlatformUser centralPool = getCentralPool();
-            if (request.isInbound()) {
-                // Receive fiat from external wallet to central pool
-                validateBalance(sender.getBalanceFiat(), request.getAmount(), "Insufficient fiat balance for sender.");
-                sender.setBalanceFiat(sender.getBalanceFiat().subtract(request.getAmount()));
-                centralPool.setBalanceFiat(centralPool.getBalanceFiat().add(request.getAmount()));
-            } else {
-                // Send fiat from central pool to external wallet
-                validateBalance(centralPool.getBalanceFiat(), request.getAmount(), "Insufficient fiat balance in central pool.");
-                centralPool.setBalanceFiat(centralPool.getBalanceFiat().subtract(request.getAmount()));
-            }
-            platformUserRepository.save(centralPool);
-        }
-
-        LedgerEntry ledger = ledgerService.logExternalTransfer(request);
-        List<Transaction> transactions = logOnChainAndSaveTransaction(type, List.of(ledger), sender.getId(), null);
-        transactionRepository.saveAll(transactions);
-
-        ExternalTransferResponse response = new ExternalTransferResponse();
-        response.setMessage(request.isInbound() ? "External deposit successful." : "External withdrawal successful.");
-        response.setTransactionId(transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
         return response;
     }
 
@@ -320,11 +306,11 @@ public class TransactionServiceImpl implements TransactionService {
         checkAmountPositive(amount);
         checkTransactionAndCurrencyType(currency, type);
 
-        PlatformUser sender = getPlatformUserWithLock(UUID.fromString(senderId.toString()));
+        PlatformUser sender = getPlatformUserWithLock(senderId.toString());
         if (sender == null) {
             throw new IllegalArgumentException("Sender not found: " + senderId);
         }
-        PlatformUser receiver = getPlatformUserWithLock(UUID.fromString(receiverId.toString()));
+        PlatformUser receiver = getPlatformUserWithLock(receiverId.toString());
         if (receiver == null) {
             throw new IllegalArgumentException("Receiver not found: " + receiverId);
         }
@@ -355,7 +341,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalStateException("Failed to log transfer entries");
         }
 
-        List<Transaction> transactions = logOnChainAndSaveTransaction(type, ledgerEntries, senderId, receiverId);
+        List<Transaction> transactions = logOnChainAndSaveTransaction(type, ledgerEntries, senderId, receiverId, null);
         transactionRepository.saveAll(transactions);
         return transactions.get(0);
     }
@@ -365,7 +351,7 @@ public class TransactionServiceImpl implements TransactionService {
         checkAmountPositive(amount);
         checkTransactionAndCurrencyType(currency, type);
 
-        PlatformUser receiver = getPlatformUserWithLock(UUID.fromString(receiverId.toString()));
+        PlatformUser receiver = getPlatformUserWithLock(receiverId.toString());
         if (receiver == null) {
             throw new IllegalArgumentException("Receiver not found: " + receiverId);
         }
@@ -392,18 +378,22 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalStateException("Failed to log transfer entries");
         }
 
-        List<Transaction> transactions = logOnChainAndSaveTransaction(type, ledgerEntries, sender.getId(), receiverId);
+        List<Transaction> transactions = logOnChainAndSaveTransaction(type, ledgerEntries, sender.getId(), receiverId, null);
         transactionRepository.saveAll(transactions);
         return transactions.get(0);
     }
 
-    private List<Transaction> logOnChainAndSaveTransaction(TransactionType type, List<LedgerEntry> ledgers, UUID senderId, UUID receiverId) {
+    private List<Transaction> logOnChainAndSaveTransaction(TransactionType type, List<LedgerEntry> ledgers, UUID senderId, UUID receiverId, String externalWalletAddress) {
         return ledgers.stream().map(ledger -> {
             UUID platformUserId = ledger.getSenderId() != null ? UUID.fromString(ledger.getSenderId()) :
                     ledger.getReceiverId() != null ? UUID.fromString(ledger.getReceiverId()) : senderId;
             SuiResponse suiResponse = null;
             try {
-                suiResponse = moveServiceClient.logOnChain(ledger);
+                if (type == TransactionType.WITHDRAWAL || type == TransactionType.EXTERNAL_WITHDRAWAL) {
+                    // Handled in processWithdrawal/processExternalTransfer
+                } else {
+                    suiResponse = moveServiceClient.logOnChain(ledger);
+                }
             } catch (Exception e) {
                 log.warn("Failed to log transaction on-chain: {}", e.getMessage());
             }
@@ -419,7 +409,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .status(suiResponse != null ? TransactionStatus.SUCCESSFUL : TransactionStatus.FAILED)
                     .timestamp(Instant.now())
                     .gasFee(suiResponse != null ? suiResponse.getGasFee() : null)
-                    .onChain(suiResponse != null)
+                    .onChain(suiResponse != null || (type == TransactionType.WITHDRAWAL || type == TransactionType.EXTERNAL_WITHDRAWAL))
                     .externalWalletAddress(externalWalletAddress)
                     .build();
         }).map(transactionRepository::save).collect(Collectors.toList());
@@ -446,17 +436,17 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
-    private PlatformUser getPlatformUserWithLock(UUID platformUserId) {
+    private PlatformUser getPlatformUserWithLock(String platformUserId) {
         if (platformUserId == null) {
             throw new IllegalArgumentException("Platform user ID cannot be null");
         }
-        return platformUserRepository.findByPlatformUserId(platformUserId.toString())
+        return platformUserRepository.findByPlatformUserId(platformUserId)
                 .orElseGet(() -> {
-                    User user = userRepository.findById(platformUserId)
+                    User user = userRepository.findById(UUID.fromString(platformUserId))
                             .orElseThrow(() -> new IllegalArgumentException("User not found for platform user ID: " + platformUserId));
                     PlatformUser newUser = new PlatformUser();
                     newUser.setId(UUID.randomUUID());
-                    newUser.setPlatformUserId(platformUserId.toString());
+                    newUser.setPlatformUserId(platformUserId);
                     newUser.setPlatformId("default-platform"); // Adjust as needed
                     newUser.setUser(user);
                     newUser.setBalanceFiat(BigDecimal.ZERO);
@@ -466,10 +456,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private Wallet getCentralSuiWallet() {
-        return walletRepository.findByWalletAddress(CENTRAL_SUI_WALLET_ADDRESS)
+        return walletRepository.findByWalletAddress(centralSuiWalletAddress)
                 .orElseGet(() -> {
                     Wallet wallet = new Wallet();
-                    wallet.setWalletAddress(CENTRAL_SUI_WALLET_ADDRESS);
+                    wallet.setWalletAddress(centralSuiWalletAddress);
                     wallet.setBalance(BigDecimal.ZERO);
                     wallet.setCurrencyType(WalletCurrency.SUI);
                     return walletRepository.save(wallet);
@@ -477,10 +467,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private PlatformUser getCentralPool() {
-        return platformUserRepository.findByIdWithPessimisticLock(CENTRAL_POOL_ID)
+        return platformUserRepository.findByIdWithPessimisticLock(centralPoolId)
                 .orElseGet(() -> {
                     PlatformUser pool = new PlatformUser();
-                    pool.setId(CENTRAL_POOL_ID);
+                    pool.setId(centralPoolId);
                     pool.setPlatformUserId("central-pool");
                     pool.setPlatformId("default-platform"); // Adjust as needed
                     pool.setBalanceFiat(BigDecimal.ZERO);
@@ -504,4 +494,3 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
     }
 }
-

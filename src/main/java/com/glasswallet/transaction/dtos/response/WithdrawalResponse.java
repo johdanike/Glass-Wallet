@@ -11,4 +11,8 @@ import java.util.UUID;
 public class WithdrawalResponse {
     private String message;
     private List<UUID> transactionId;
+    private String transactionIdOnChain;
+    private String status;
+    private String platformId;
+    private String platformUserId;
 }

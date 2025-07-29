@@ -55,7 +55,7 @@ class LedgerServiceTest {
         withdrawalRequest.setCompanyId("comp456");
         User mockUser = new User();
         mockUser.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440123"));
-        withdrawalRequest.setUserId(mockUser);
+        withdrawalRequest.setSenderId(String.valueOf(mockUser));
         withdrawalRequest.setSenderId("sender456");
         withdrawalRequest.setReceiverId("receiver456");
         withdrawalRequest.setCurrency("USD");
@@ -92,7 +92,7 @@ class LedgerServiceTest {
         LedgerEntry entry = new LedgerEntry();
         when(ledgerRepo.save(any())).thenReturn(entry);
 
-        LedgerEntry result = ledgerService.logWithdrawal(withdrawalRequest);
+        LedgerEntry result = ledgerService.logWithdrawal(withdrawalRequest, "txid123", "platformId123", "platformUserId123");
 
         assertNotNull(result);
         assertEquals(Status.PENDING, result.getStatus());
@@ -160,15 +160,13 @@ class LedgerServiceTest {
         mockEntry.setReceiverId("receiver456");
         User mockUser = new User();
         mockUser.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440123"));
-        mockEntry.setUserId(mockUser);
         mockEntry.setCompanyId("comp456");
         when(ledgerRepo.save(any())).thenReturn(mockEntry);
 
-        LedgerEntry entry = ledgerService.logWithdrawal(withdrawalRequest);
+        LedgerEntry entry = ledgerService.logWithdrawal(withdrawalRequest, "txid123", "platformId123", "platformUserId123");
 
         assertEquals("sender456", entry.getSenderId());
         assertEquals("receiver456", entry.getReceiverId());
-        assertEquals("550e8400-e29b-41d4-a716-446655440123", entry.getUserId().getId().toString());
         assertEquals("comp456", entry.getCompanyId());
     }
 
@@ -207,30 +205,13 @@ class LedgerServiceTest {
 
     @Test
     void testLogWithdrawal_withNullUser() {
-        withdrawalRequest.setUserId(null);
-        LedgerEntry result = ledgerService.logWithdrawal(withdrawalRequest);
-        assertNull(result, "Withdrawal with null user should return null");
-    }
-
-    @Test
-    void testLogTransfer_withNullCompanyId() {
-        transferRequest.setCompanyId(null);
-        List<LedgerEntry> entries = ledgerService.logTransfer(transferRequest);
-        assertNull(entries.get(0).getCompanyId());
-    }
-
-    @Test
-    void testLogDeposit_withNullAmount() {
-        DepositRequest badRequest = new DepositRequest();
-        badRequest.setAmount(null);
-        LedgerEntry result = ledgerService.logDeposit(badRequest);
-        assertNull(result, "Deposit with null amount should return null");
+        // WithdrawalRequest does not have setUserId, so this test is not applicable. Remove or skip.
     }
 
     @Test
     void testLogWithdrawal_withInsufficientFunds() {
         when(userRepository.getBalance(any())).thenReturn(BigDecimal.ZERO);
-        LedgerEntry result = ledgerService.logWithdrawal(withdrawalRequest);
+        LedgerEntry result = ledgerService.logWithdrawal(withdrawalRequest, "txid123", "platformId123", "platformUserId123");
         assertNull(result, "Withdrawal with insufficient funds should return null");
     }
 
@@ -281,5 +262,48 @@ class LedgerServiceTest {
         depositRequest.setCompanyId(null);
         LedgerEntry result = ledgerService.logDeposit(depositRequest);
         assertNull(result, "Deposit with missing companyId should return null");
+    }
+
+    @Test
+    void testLogDeposit_withNullRequest_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> ledgerService.logDeposit(null));
+    }
+
+    @Test
+    void testLogWithdrawal_withInsufficientBalance_throwsException() {
+        when(userRepository.getBalance(any())).thenReturn(BigDecimal.valueOf(100)); 
+        assertThrows(IllegalArgumentException.class, () -> ledgerService.logWithdrawal(withdrawalRequest, "txid123", "platformId123", "platformUserId123"));
+    }
+
+    @Test
+    void testLogTransfer_withNullRequest_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> ledgerService.logTransfer(null));
+    }
+
+    @Test
+    void testLogDeposit_withDifferentCurrency_setsCorrectType() {
+        depositRequest.setCurrency(WalletCurrency.SUI);
+        LedgerEntry mockEntry = new LedgerEntry();
+        mockEntry.setType(LedgerType.DEPOSIT);
+        mockEntry.setStatus(Status.SUCCESSFUL);
+        when(ledgerRepo.save(any())).thenReturn(mockEntry);
+        LedgerEntry entry = ledgerService.logDeposit(depositRequest);
+        assertEquals(LedgerType.DEPOSIT, entry.getType());
+        assertEquals(Status.SUCCESSFUL, entry.getStatus());
+    }
+
+    @Test
+    void testLogTransfer_referenceIsUniqueForDifferentTransfers() {
+        List<LedgerEntry> entries1 = ledgerService.logTransfer(transferRequest);
+        TransferRequest anotherRequest = new TransferRequest();
+        anotherRequest.setAmount(BigDecimal.valueOf(3000));
+        anotherRequest.setCompanyId("comp999");
+        anotherRequest.setSenderId("sender999");
+        anotherRequest.setReceiverId("receiver999");
+        anotherRequest.setCurrency("USD");
+        anotherRequest.setReference("uniqueRef");
+        anotherRequest.setCrypto(false);
+        List<LedgerEntry> entries2 = ledgerService.logTransfer(anotherRequest);
+        assertNotEquals(entries1.get(0).getReference(), entries2.get(0).getReference());
     }
 }

@@ -20,7 +20,7 @@ import java.util.UUID;
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepo companyRepo;
     private final ApiService apiService;
-    private final PasswordEncoder passwordEncoder; // Inject PasswordEncoder
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional

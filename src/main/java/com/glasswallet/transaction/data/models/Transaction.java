@@ -1,10 +1,14 @@
 package com.glasswallet.transaction.data.models;
 
+import com.glasswallet.Wallet.enums.WalletCurrency;
+import com.glasswallet.transaction.enums.CurrencyType;
 import com.glasswallet.transaction.enums.TransactionStatus;
 import com.glasswallet.transaction.enums.TransactionType;
-import com.glasswallet.Wallet.enums.WalletCurrency;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,48 +16,45 @@ import java.util.UUID;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "transactions", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "platform_id", "transaction_Id"})
+})
 @Builder
-@Table(name = "transactions")
+@AllArgsConstructor
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "transaction_Id")
     private UUID id;
 
-    @Column(name = "sender_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private String senderId;
 
-    @Column(name = "receiver_id")
+    @Column(name = "receiver_id",   nullable = false)
     private String receiverId;
 
-    @Column(name = "platform_id")
+    @JoinColumn(name = "platform_id", nullable = false)
     private String platformId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type")
     private TransactionType transactionType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "currency")
-    private WalletCurrency currency;
-
-    @Column(name = "amount")
+    @Column(name = "amount",  nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    private WalletCurrency currency;
+
+    @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
-    @Column(name = "timestamp")
     private Instant timestamp;
 
-    @Column(name = "gas_fee")
-    private BigDecimal gasFee;
-
-    @Column(name = "on_chain")
-    private boolean onChain;
-
-    @Column(name = "external_wallet_address")
+    @Column(name = "external_wallet_address", length = 255)
     private String externalWalletAddress;
+
+    private boolean onChain;
+    private String suiTxHash;
+    private BigDecimal gasFee;
+    private String direction;
 }

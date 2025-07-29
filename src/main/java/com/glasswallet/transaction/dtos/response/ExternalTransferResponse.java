@@ -9,4 +9,7 @@ import java.util.UUID;
 public class ExternalTransferResponse {
     private String message;
     private List<UUID> transactionId;
+    private String platformId;
+    private String platformUserId;
+    private String transactionIdOnChain;
 }
