@@ -131,6 +131,7 @@ public class TransactionServiceImpl implements TransactionService {
         payload.setSenderId(user.getPlatformUserId());
         payload.setAmount(request.getAmount());
         payload.setExternalWalletAddress(request.getExternalWalletAddress());
+
         // Note: Only senderId, amount, and externalWalletAddress are relevant for the Node.js endpoint
         ResponseEntity<WithdrawalResponse> response = restTemplate.postForEntity(
                 withdrawSuiEndpoint,

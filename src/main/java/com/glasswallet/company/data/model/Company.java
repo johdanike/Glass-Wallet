@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 public class Company {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) // Changed to UUID
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -20,7 +20,7 @@ public class Company {
     @Column(nullable = false, unique = true, name = "platform_id")
     private String platformId;
 
-    @Column(nullable = false, name = "password") // Removed unique for flexibility
+    @Column(nullable = false, name = "password")
     private String password;
 
     private String industry;

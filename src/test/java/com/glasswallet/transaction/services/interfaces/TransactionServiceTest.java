@@ -323,7 +323,7 @@ public class TransactionServiceTest {
     @Test
     void processWithdrawal_nullSenderId_throwsException() {
         WithdrawalRequest request = new WithdrawalRequest();
-        request.setAmount(BigDecimal.valueOf(10));
+        request.setAmount(BigDecimal.valueOf(100));
         request.setCurrency("NGN");
         request.setSenderId(null);
         assertThrows(IllegalArgumentException.class, () -> transactionService.processWithdrawal(request));
@@ -342,10 +342,25 @@ public class TransactionServiceTest {
     }
 
     @Test
-    void processWithdrawal_exactBalance_success() {
+    void processWithdrawal_ledgerServiceFailure_throwsException() {
         WithdrawalRequest request = new WithdrawalRequest();
         UUID senderId = UUID.randomUUID();
-        request.setAmount(BigDecimal.valueOf(100));
+        request.setAmount(BigDecimal.valueOf(10));
+        request.setCurrency("NGN");
+        request.setSenderId(String.valueOf(senderId));
+        PlatformUser user = new PlatformUser();
+        user.setId(senderId);
+        user.setBalanceFiat(BigDecimal.valueOf(100));
+        when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenThrow(new RuntimeException("Ledger error"));
+        assertThrows(RuntimeException.class, () -> transactionService.processWithdrawal(request));
+    }
+
+    @Test
+    void processWithdrawal_moveServiceClientFailure_throwsException() {
+        WithdrawalRequest request = new WithdrawalRequest();
+        UUID senderId = UUID.randomUUID();
+        request.setAmount(BigDecimal.valueOf(10));
         request.setCurrency("NGN");
         request.setSenderId(String.valueOf(senderId));
         PlatformUser user = new PlatformUser();
@@ -354,13 +369,8 @@ public class TransactionServiceTest {
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
         when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
-        when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
-        when(transactionRepository.save(any())).thenReturn(new Transaction());
-
-        WithdrawalResponse response = transactionService.processWithdrawal(request);
-        assertEquals("Withdrawal successful.", response.getMessage());
-        assertEquals(BigDecimal.ZERO, user.getBalanceFiat());
-        verify(platformUserRepository).save(any(PlatformUser.class));
+        when(moveServiceClient.logOnChain(any())).thenThrow(new RuntimeException("Move error"));
+        assertThrows(RuntimeException.class, () -> transactionService.processWithdrawal(request));
     }
 
     @Test
@@ -383,6 +393,56 @@ public class TransactionServiceTest {
         assertEquals("Withdrawal successful.", response.getMessage());
         assertEquals(BigDecimal.valueOf(87.66), user.getBalanceFiat());
         verify(platformUserRepository).save(any(PlatformUser.class));
+    }
+
+    @Test
+    void processWithdrawal_largeAmount_success() {
+        WithdrawalRequest request = new WithdrawalRequest();
+        UUID senderId = UUID.randomUUID();
+        request.setAmount(BigDecimal.valueOf(999.99));
+        request.setCurrency("NGN");
+        request.setSenderId(String.valueOf(senderId));
+        PlatformUser user = new PlatformUser();
+        user.setId(senderId);
+        user.setBalanceFiat(BigDecimal.valueOf(1000));
+        LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
+        when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
+        when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
+        when(transactionRepository.save(any())).thenReturn(new Transaction());
+
+        WithdrawalResponse response = transactionService.processWithdrawal(request);
+        assertEquals("Withdrawal successful.", response.getMessage());
+        assertEquals(BigDecimal.valueOf(0.01), user.getBalanceFiat());
+        verify(platformUserRepository).save(any(PlatformUser.class));
+    }
+
+    @Test
+    void processWithdrawal_suiCurrency_success() {
+        WithdrawalRequest request = new WithdrawalRequest();
+        UUID senderId = UUID.randomUUID();
+        request.setAmount(BigDecimal.valueOf(10));
+        request.setCurrency("SUI");
+        request.setSenderId(String.valueOf(senderId));
+        PlatformUser user = new PlatformUser();
+        user.setId(senderId);
+        user.setBalanceSui(BigDecimal.valueOf(100));
+        Wallet centralWallet = new Wallet();
+        centralWallet.setWalletAddress("0xCentralSuiWalletAddress");
+        centralWallet.setBalance(BigDecimal.valueOf(100));
+        centralWallet.setCurrencyType(WalletCurrency.SUI);
+        LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
+        when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
+        when(walletRepository.findByWalletAddress("0xCentralSuiWalletAddress")).thenReturn(Optional.of(centralWallet));
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
+        when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
+        when(transactionRepository.save(any())).thenReturn(new Transaction());
+
+        WithdrawalResponse response = transactionService.processWithdrawal(request);
+        assertEquals("Withdrawal successful.", response.getMessage());
+        assertEquals(BigDecimal.valueOf(90), user.getBalanceSui());
+        assertEquals(BigDecimal.valueOf(90), centralWallet.getBalance());
+        verify(walletRepository).save(any(Wallet.class));
     }
 
 
@@ -844,3 +904,4 @@ public class TransactionServiceTest {
 
 
 }
+
