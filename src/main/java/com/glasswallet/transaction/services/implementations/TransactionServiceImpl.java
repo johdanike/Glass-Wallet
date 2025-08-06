@@ -12,14 +12,8 @@ import com.glasswallet.platform.data.models.PlatformUser;
 import com.glasswallet.platform.data.repositories.PlatformUserRepository;
 import com.glasswallet.transaction.data.models.Transaction;
 import com.glasswallet.transaction.data.repositories.TransactionRepository;
-import com.glasswallet.transaction.dtos.request.BulkDisbursementRequest;
-import com.glasswallet.transaction.dtos.request.DepositRequest;
-import com.glasswallet.transaction.dtos.request.TransferRequest;
-import com.glasswallet.transaction.dtos.request.WithdrawalRequest;
-import com.glasswallet.transaction.dtos.response.BulkDisbursementResponse;
-import com.glasswallet.transaction.dtos.response.DepositResponse;
-import com.glasswallet.transaction.dtos.response.TransferResponse;
-import com.glasswallet.transaction.dtos.response.WithdrawalResponse;
+import com.glasswallet.transaction.dtos.request.*;
+import com.glasswallet.transaction.dtos.response.*;
 import com.glasswallet.transaction.enums.TransactionStatus;
 import com.glasswallet.transaction.enums.TransactionType;
 import com.glasswallet.transaction.services.interfaces.TransactionService;
@@ -61,6 +55,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final WalletRepository walletRepository;
     private final RestTemplate restTemplate;
     private final MoveServiceClient moveServiceClient;
+    private final PayStackService paystackService;
 
     @Override
     @Transactional
@@ -81,6 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
             user.setBalanceSui(user.getBalanceSui().add(request.getAmount()));
             walletRepository.save(centralWallet);
         } else {
+
             PlatformUser centralPool = getCentralPool();
             centralPool.setBalanceFiat(centralPool.getBalanceFiat().add(request.getAmount()));
             user.setBalanceFiat(user.getBalanceFiat().add(request.getAmount()));
@@ -118,6 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
             user.setBalanceSui(user.getBalanceSui().subtract(request.getAmount()));
             walletRepository.save(centralWallet);
         } else {
+
             PlatformUser centralPool = getCentralPool();
             validateBalance(centralPool.getBalanceFiat(), request.getAmount(), "Insufficient fiat balance in central pool.");
             validateBalance(user.getBalanceFiat(), request.getAmount(), "Insufficient fiat balance for user.");
@@ -162,6 +159,7 @@ public class TransactionServiceImpl implements TransactionService {
         withdrawalResponse.setPlatformUserId(user.getPlatformUserId());
         return withdrawalResponse;
     }
+
 
     @Override
     @Transactional
