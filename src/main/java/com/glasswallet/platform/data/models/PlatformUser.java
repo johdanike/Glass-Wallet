@@ -45,6 +45,7 @@ public class PlatformUser {
     private BigDecimal balanceFiat = BigDecimal.ZERO;
     private BigDecimal balanceSui = BigDecimal.ZERO;
     private String token;
+    private String email;
 
     @Column(name = "pin", length = 4)
     private String pin;

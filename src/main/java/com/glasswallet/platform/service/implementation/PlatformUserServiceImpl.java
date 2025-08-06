@@ -20,7 +20,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PlatformUserServiceImpl implements PlatformUserService {
-
     private final PlatformUserRepository platformUserRepository;
     private final UserRepository userRepository;
     private final CompanyRepo companyRepo;
