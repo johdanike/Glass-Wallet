@@ -22,11 +22,18 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PayStackService {
+    @Value( "${paystack.base.url}" )
+    private String baseUrl;
+    @Value( "${paystack.secret.key}" )
+    private String secret_key;
+
     private final RestTemplate restTemplate;
     private final WebClient.Builder webClientBuilder;
     private final PayStackData payStackData;
 
     public PayStackResponse initializeTransaction(String email, String amount) {
+        payStackData.setBaseUrl(baseUrl);
+        payStackData.setSecret(secret_key);
         String url = payStackData.getBaseUrl() + "/transaction/initialize";
 
         HttpHeaders headers = new HttpHeaders();
@@ -35,17 +42,13 @@ public class PayStackService {
 
         Map<String, Object> body = new HashMap<>();
         body.put("email", email);
-        body.put("amount", amount); // amount in kobo (e.g., 1000 = ₦10)
-
-        // 🔍 Debug logs
-        System.out.println("Paystack URL: " + url);
-        System.out.println("Authorization: Bearer " + payStackData.getSecret());
-        System.out.println("Request Body: " + body);
+        body.put("amount", amount);
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         ResponseEntity<PayStackResponse> response = restTemplate.postForEntity(
-                url, requestEntity, PayStackResponse.class);
+                url, requestEntity, PayStackResponse.class
+        );
 
         return response.getBody();
     }

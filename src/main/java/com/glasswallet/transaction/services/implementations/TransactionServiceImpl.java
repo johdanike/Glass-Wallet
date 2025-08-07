@@ -250,10 +250,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Call Node.js endpoint for on-chain withdrawal
         WithdrawalRequest payload = new WithdrawalRequest();
-        payload.setSenderId(user.getPlatformUserId());
-        payload.setAmount(request.getAmount());
+//        payload.setSenderId(user.getPlatformUserId());
         payload.setExternalWalletAddress(request.getExternalWalletAddress());
-
+        payload.setAmount(request.getAmount());
         ResponseEntity<WithdrawalResponse> response = restTemplate.postForEntity(
                 withdrawSuiEndpoint,
                 payload,
