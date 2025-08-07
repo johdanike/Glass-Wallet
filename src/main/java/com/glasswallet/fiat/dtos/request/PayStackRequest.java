@@ -1,4 +1,4 @@
-package com.glasswallet.transaction.dtos.request;
+package com.glasswallet.fiat.dtos.request;
 
 import lombok.Data;
 import lombok.Getter;
@@ -14,6 +14,5 @@ import java.util.UUID;
 public class PayStackRequest {
     private String email;
     private BigDecimal amount;
-    private UUID receiverId;
 
 }

@@ -2,9 +2,11 @@ package com.glasswallet.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
+import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,4 +41,5 @@ public class DatabaseConfig {
             log.error("Failed to get database info: {}", e.getMessage());
         }
     }
+
 }

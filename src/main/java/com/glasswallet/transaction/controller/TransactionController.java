@@ -35,7 +35,7 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     public ResponseEntity<DepositResponse> deposit(@RequestBody DepositRequest request) {
-        return ResponseEntity.ok(transactionService.processDeposit(request));
+        return ResponseEntity.ok(transactionService.processDepositForSui(request));
     }
 
     @PostMapping("/withdraw")

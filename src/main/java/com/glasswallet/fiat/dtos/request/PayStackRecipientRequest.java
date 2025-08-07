@@ -1,4 +1,4 @@
-package com.glasswallet.transaction.dtos.request;
+package com.glasswallet.fiat.dtos.request;
 
 import lombok.Data;
 import lombok.Getter;

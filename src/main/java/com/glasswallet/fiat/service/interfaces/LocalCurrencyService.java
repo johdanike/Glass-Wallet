@@ -1,4 +1,4 @@
-package com.glasswallet.transaction.services.interfaces;
+package com.glasswallet.fiat.service.interfaces;
 
 import com.glasswallet.Wallet.enums.WalletCurrency;
 import com.glasswallet.transaction.data.models.Transaction;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TransactionService {
-    DepositResponse processDepositForSui(DepositRequest request);
+public interface LocalCurrencyService {
+    DepositResponse processDepositForFiats(DepositRequest request);
 
-    WithdrawalResponse processWithdrawal(WithdrawalRequest request);
-    TransferResponse processTransfer(TransferRequest request);
+    WithdrawalResponse processWithdrawalForFiat(WithdrawalRequest request);
+    TransferResponse processTransferForFiats(TransferRequest request);
     BulkDisbursementResponse processBulkDisbursement(BulkDisbursementRequest request);
     List<Transaction> getAllTransactionsForUser(String userId);
     List<Transaction> getTransactionsByCompany(String companyId);
@@ -30,4 +30,6 @@ public interface TransactionService {
 
     @Transactional
     Transaction transact(UUID senderId, UUID receiverId, UUID companyId, TransactionType type, WalletCurrency currency, String reference, BigDecimal amount);
+
+
 }

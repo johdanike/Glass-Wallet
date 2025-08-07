@@ -111,7 +111,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public DepositResponse depositFiat(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
-        return transactionService.processDeposit(DepositRequest.builder()
+        return transactionService.processDepositForSui(DepositRequest.builder()
                 .receiverId(receiverId)
                 .companyId(companyId)
                 .currency(WalletCurrency.NGN)
@@ -122,7 +122,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public DepositResponse depositSui(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
-        return transactionService.processDeposit(DepositRequest.builder()
+        return transactionService.processDepositForSui(DepositRequest.builder()
                 .receiverId(receiverId)
                 .companyId(companyId)
                 .currency(WalletCurrency.SUI)
@@ -241,7 +241,7 @@ public class WalletServiceImpl implements WalletService {
                 .reference(String.valueOf(wallet.getId()))
                 .build();
 
-        transactionService.processDeposit(request);
+        transactionService.processDepositForSui(request);
     }
 
 
