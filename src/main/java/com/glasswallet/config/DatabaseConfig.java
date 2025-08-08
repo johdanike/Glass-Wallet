@@ -31,7 +31,6 @@ public class DatabaseConfig {
             log.info("Database URL: {}", metaData.getURL());
             log.info("Database Product: {} {}", metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion());
             
-            // List all tables
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
             log.info("Available tables:");
             while (tables.next()) {
