@@ -88,12 +88,12 @@ class WalletServiceImplTest {
         String ref = "txn123";
 
         DepositResponse mockResponse = new DepositResponse();
-        when(transactionService.processDeposit(any(DepositRequest.class))).thenReturn(mockResponse);
+        when(transactionService.processDepositForSui(any(DepositRequest.class))).thenReturn(mockResponse);
 
         DepositResponse result = walletService.depositFiat(receiverId, companyId, amount, ref);
 
         assertEquals(mockResponse, result);
-        verify(transactionService).processDeposit(any(DepositRequest.class));
+        verify(transactionService).processDepositForSui(any(DepositRequest.class));
     }
 
     @Test
@@ -125,7 +125,7 @@ class WalletServiceImplTest {
         when(walletResolver.resolveWallet(anyString(), eq(WalletCurrency.NGN))).thenReturn(Optional.of(wallet));
 
         DepositResponse mockDeposit = new DepositResponse();
-        when(transactionService.processDeposit(any())).thenReturn(mockDeposit);
+        when(transactionService.processDepositForSui(any())).thenReturn(mockDeposit);
 
         var result = walletService.receivePayment("user123", WalletCurrency.NGN, BigDecimal.valueOf(1500));
 

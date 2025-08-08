@@ -1,5 +1,6 @@
 package com.glasswallet.platform.service.implementation;
 
+import com.glasswallet.company.data.repo.CompanyRepo;
 import com.glasswallet.platform.data.models.PlatformUser;
 import com.glasswallet.platform.data.repositories.PlatformUserRepository;
 import com.glasswallet.platform.dtos.requests.PlatformUserRequest;
@@ -13,14 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PlatformUserServiceImpl implements PlatformUserService {
-
     private final PlatformUserRepository platformUserRepository;
     private final UserRepository userRepository;
+    private final CompanyRepo companyRepo;
 
     @Override
     @Transactional
@@ -39,9 +41,9 @@ public class PlatformUserServiceImpl implements PlatformUserService {
                     newUser.setOnboarded(true);
                     newUser.setCreatedAt(Instant.now());
                     userRepository.save(newUser);
-
                     return Optional.of(newUser);
                 });
+
         return platformUserRepository.findByPlatformIdAndPlatformUserId(
                         request.getCompanyId(), request.getCompanyUserId())
                 .orElseGet(() -> {
@@ -51,8 +53,35 @@ public class PlatformUserServiceImpl implements PlatformUserService {
                     platformUser.setPlatformUserId(request.getCompanyUserId());
                     platformUser.setUser(user.get());
                     platformUser.setToken(request.getToken());
+
+                    platformUser.setGeneratedPlatformUserId(
+                            generateUniquePlatformUserId(request.getCompanyId())
+                    );
+
                     return platformUserRepository.save(platformUser);
                 });
+    }
+
+    private String getCompanyName(String companyId) {
+        return companyRepo.findById(UUID.fromString(companyId))
+                .map(company -> company.getName())
+                .orElseThrow(() -> new NotFoundException("Company not found"));
+    }
+
+    private String sanitizeCompanyName(String name) {
+        return name.trim().toLowerCase().replaceAll("[^a-z0-9]", "");
+    }
+
+    private String generateUniquePlatformUserId(String companyId) {
+        String companyName = sanitizeCompanyName(getCompanyName(companyId));
+        Random random = new Random();
+        String candidateId;
+
+        do {
+            candidateId = String.format("%06d.%s", random.nextInt(1_000_000), companyName);
+        } while (platformUserRepository.existsByGeneratedPlatformUserId(candidateId));
+
+        return candidateId;
     }
 
     @Override

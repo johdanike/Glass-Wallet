@@ -19,7 +19,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TransactionService {
-    DepositResponse processDeposit(DepositRequest request);
+    DepositResponse processDepositForSui(DepositRequest request);
+
     WithdrawalResponse processWithdrawal(WithdrawalRequest request);
     TransferResponse processTransfer(TransferRequest request);
     BulkDisbursementResponse processBulkDisbursement(BulkDisbursementRequest request);

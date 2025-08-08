@@ -111,7 +111,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public DepositResponse depositFiat(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
-        return transactionService.processDeposit(DepositRequest.builder()
+        return transactionService.processDepositForSui(DepositRequest.builder()
                 .receiverId(receiverId)
                 .companyId(companyId)
                 .currency(WalletCurrency.NGN)
@@ -122,7 +122,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public DepositResponse depositSui(UUID receiverId, UUID companyId, BigDecimal amount, String reference) {
-        return transactionService.processDeposit(DepositRequest.builder()
+        return transactionService.processDepositForSui(DepositRequest.builder()
                 .receiverId(receiverId)
                 .companyId(companyId)
                 .currency(WalletCurrency.SUI)
@@ -203,10 +203,24 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public PaymentResult receivePayment(String recipientIdentifier, WalletCurrency currency, BigDecimal amount) {
+        validateAmount(amount);
+
+        Wallet wallet = resolveAndValidateWallet(recipientIdentifier, currency);
+
+        buildAndCreateDepositRequest(currency, amount, wallet);
+
+        return new PaymentResult(wallet.getId(), currency, amount);
+    }
+
+
+    private void validateAmount(BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
+    }
 
+
+    private Wallet resolveAndValidateWallet(String recipientIdentifier, WalletCurrency currency) {
         Wallet wallet = walletResolver.resolveWallet(recipientIdentifier, currency)
                 .orElseThrow(() -> new WalletNotFoundException("Recipient wallet not found"));
 
@@ -214,14 +228,9 @@ public class WalletServiceImpl implements WalletService {
             throw new IllegalStateException("Recipient wallet is inactive");
         }
 
-        buildAndCreateDepositRequest(currency, amount, wallet);
-
-        return new PaymentResult(
-                wallet.getId(),
-                currency,
-                amount
-        );
+        return wallet;
     }
+
 
     private void buildAndCreateDepositRequest(WalletCurrency currency, BigDecimal amount, Wallet wallet) {
         DepositRequest request = DepositRequest.builder()
@@ -232,7 +241,7 @@ public class WalletServiceImpl implements WalletService {
                 .reference(String.valueOf(wallet.getId()))
                 .build();
 
-        transactionService.processDeposit(request);
+        transactionService.processDepositForSui(request);
     }
 
 

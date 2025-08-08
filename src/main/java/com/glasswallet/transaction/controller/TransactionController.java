@@ -33,12 +33,12 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @PostMapping("/deposit")
+    @PostMapping("/depositSui")
     public ResponseEntity<DepositResponse> deposit(@RequestBody DepositRequest request) {
-        return ResponseEntity.ok(transactionService.processDeposit(request));
+        return ResponseEntity.ok(transactionService.processDepositForSui(request));
     }
 
-    @PostMapping("/withdraw")
+    @PostMapping("/withdrawSui")
     public ResponseEntity<WithdrawalResponse> withdraw(@RequestBody WithdrawalRequest request) {
         return ResponseEntity.ok(transactionService.processWithdrawal(request));
     }

@@ -1,5 +1,6 @@
 package com.glasswallet.platform.data.models;
 
+import com.glasswallet.config.JsonbConverter;
 import com.glasswallet.user.data.models.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -34,9 +37,22 @@ public class PlatformUser {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Convert(converter = JsonbConverter.class)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, String> kycDetails = new HashMap<>();
+
     private BigDecimal balanceFiat = BigDecimal.ZERO;
     private BigDecimal balanceSui = BigDecimal.ZERO;
     private String token;
+    private String email;
 
+    @Column(name = "pin", length = 4)
+    private String pin;
 
+    @Column(name = "is_activated")
+    private boolean isActivated = false;
+
+    @Column(name = "generated_platform_user_id", unique = true)
+     private String generatedPlatformUserId;
 }

@@ -1,0 +1,148 @@
+{
+    "checksum": "d707af736d7111503e987049771c8f6838f51642340094152766f7d141f917d8",
+    "data": {
+    "id": "b7a90804-945a-464c-b123-08ce43a23152",
+    "createdAt": 1754413166947,
+    "updatedAt": 1754413168900,
+    "title": "fix",
+    "messages": [
+        {
+            "id": "b7dd023e-8ee4-4baa-bbb3-01741538e6ed",
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "fix"
+                }
+            ],
+            "context": {
+                "currentFile": {
+                    "path": "src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\PayStackService.java",
+                    "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\PayStackService.java",
+                    "sources": [
+                        "opened_tab"
+                    ],
+                    "content": "package com.glasswallet.transaction.services.implementations;\r\n\r\nimport com.glasswallet.transaction.dtos.request.PayStackRequest;\r\nimport com.glasswallet.transaction.dtos.response.PayStackResponse;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.http.HttpEntity;\r\nimport org.springframework.http.HttpHeaders;\r\nimport org.springframework.http.MediaType;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.web.client.RestTemplate;\r\nimport org.springframework.web.reactive.function.client.WebClient;\r\nimport reactor.core.publisher.Mono;\r\n\r\n@Service\r\npublic class PayStackService {\r\n    @Value(\"${paystack.secret.key}\")\r\n    private String secretKey;\r\n\r\n    private final RestTemplate restTemplate = new RestTemplate();\r\n\r\n    private final WebClient webClient = WebClient.builder()\r\n            .baseUrl(\"https://api.paystack.co\")\r\n            .defaultHeader(\"Authorization\", \"Bearer \" + System.getenv(\"PAY_STACK_SECRET_KEY\"))\r\n            .build();\r\n\r\n    public PayStackResponse initializeTransaction(PayStackRequest request) {\r\n        HttpHeaders headers = new HttpHeaders();\r\n        headers.setContentType(MediaType.APPLICATION_JSON);\r\n        headers.setBearerAuth(secretKey);\r\n\r\n        HttpEntity<PayStackRequest> entity = new HttpEntity<>(request, headers);\r\n\r\n        ResponseEntity<PayStackResponse> response = restTemplate.postForEntity(\r\n                \"https://api.paystack.co/transaction/initialize\",\r\n                entity,\r\n                PayStackResponse.class\r\n        );\r\n\r\n        return response.getBody();\r\n    }\r\n\r\n    public Mono<PayStackResponse> initializeTransactionWebClient(PayStackRequest request) {\r\n        return webClient.post()\r\n                .uri(\"/transaction/initialize\")\r\n                .contentType( MediaType.APPLICATION_JSON)\r\n                .bodyValue(request)\r\n                .retrieve()\r\n                .bodyToMono(PayStackResponse.class);\r\n    }\r\n}\r\n"
+                },
+                "codebaseEnabled": true,
+                "ragFiles": [
+                    {
+                        "path": "pom.xml",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\pom.xml",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/services/implementations/TransactionServiceImpl.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\TransactionServiceImpl.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/data/models/Transaction.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\data\\models\\Transaction.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/controller/TransactionController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\controller\\TransactionController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/dtos/request/PayStackRequest.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\dtos\\request\\PayStackRequest.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/dtos/response/PayStackResponse.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\dtos\\response\\PayStackResponse.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/services/implementations/PayStackService.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\PayStackService.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/java/com/glasswallet/transaction/controller/PayStackController.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\controller\\PayStackController.java",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/secrets.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\resources\\secrets.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    },
+                    {
+                        "path": "src/main/resources/application.properties",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\resources\\application.properties",
+                        "sources": [
+                            "opened_tab"
+                        ]
+                    }
+                ],
+                "usedFilePaths": [
+                    {
+                        "path": "src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\PayStackService.java",
+                        "fsPath": "C:\\Users\\DELL\\Desktop\\palace\\Glass-Wallet\\src\\main\\java\\com\\glasswallet\\transaction\\services\\implementations\\PayStackService.java",
+                        "sources": [
+                            "opened_tab"
+                        ],
+                        "content": "package com.glasswallet.transaction.services.implementations;\r\n\r\nimport com.glasswallet.transaction.dtos.request.PayStackRequest;\r\nimport com.glasswallet.transaction.dtos.response.PayStackResponse;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.http.HttpEntity;\r\nimport org.springframework.http.HttpHeaders;\r\nimport org.springframework.http.MediaType;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.web.client.RestTemplate;\r\nimport org.springframework.web.reactive.function.client.WebClient;\r\nimport reactor.core.publisher.Mono;\r\n\r\n@Service\r\npublic class PayStackService {\r\n    @Value(\"${paystack.secret.key}\")\r\n    private String secretKey;\r\n\r\n    private final RestTemplate restTemplate = new RestTemplate();\r\n\r\n    private final WebClient webClient = WebClient.builder()\r\n            .baseUrl(\"https://api.paystack.co\")\r\n            .defaultHeader(\"Authorization\", \"Bearer \" + System.getenv(\"PAY_STACK_SECRET_KEY\"))\r\n            .build();\r\n\r\n    public PayStackResponse initializeTransaction(PayStackRequest request) {\r\n        HttpHeaders headers = new HttpHeaders();\r\n        headers.setContentType(MediaType.APPLICATION_JSON);\r\n        headers.setBearerAuth(secretKey);\r\n\r\n        HttpEntity<PayStackRequest> entity = new HttpEntity<>(request, headers);\r\n\r\n        ResponseEntity<PayStackResponse> response = restTemplate.postForEntity(\r\n                \"https://api.paystack.co/transaction/initialize\",\r\n                entity,\r\n                PayStackResponse.class\r\n        );\r\n\r\n        return response.getBody();\r\n    }\r\n\r\n    public Mono<PayStackResponse> initializeTransactionWebClient(PayStackRequest request) {\r\n        return webClient.post()\r\n                .uri(\"/transaction/initialize\")\r\n                .contentType( MediaType.APPLICATION_JSON)\r\n                .bodyValue(request)\r\n                .retrieve()\r\n                .bodyToMono(PayStackResponse.class);\r\n    }\r\n}\r\n"
+                    }
+                ]
+            },
+            "createdAt": 1754413166955,
+            "isInternal": false,
+            "rawContent": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "fix"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "830ae6e9-36f9-4572-97d7-f766513fe692",
+            "role": "system",
+            "content": [
+                {
+                    "type": "errorText",
+                    "text": "The chat request was not successful. Please try again later.",
+                    "allowRegenerate": true
+                }
+            ],
+            "createdAt": 1754413168900,
+            "isInternal": false
+        }
+    ],
+    "isAgent": false,
+    "isCustomAgent": false,
+    "isUnitTestsAgent": false,
+    "isE2EAgent": false,
+    "autoApply": false
+}
+}

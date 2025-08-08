@@ -1,26 +1,40 @@
 package com.glasswallet.user.services.interfaces;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.glasswallet.Wallet.data.model.Wallet;
+import com.glasswallet.Wallet.data.repositories.WalletRepository;
+import com.glasswallet.company.data.model.Company;
+import com.glasswallet.company.data.repo.CompanyRepo;
+import com.glasswallet.company.service.interfaces.ApiService;
 import com.glasswallet.platform.data.models.PlatformUser;
+import com.glasswallet.platform.data.repositories.PlatformUserRepository;
 import com.glasswallet.platform.service.interfaces.PlatformUserService;
 import com.glasswallet.user.data.models.User;
 import com.glasswallet.user.data.repositories.UserRepository;
 import com.glasswallet.user.dtos.requests.GlassUser;
+import com.glasswallet.user.dtos.requests.WalletActivationRequest;
+import com.glasswallet.user.dtos.responses.WalletActivationResponse;
 import com.glasswallet.user.services.implementations.CompanyIdentityMapperImpl;
 import com.glasswallet.user.services.implementations.UserLookupService;
 import com.glasswallet.user.services.implementations.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
     private UserRepository userRepository;
     private PlatformUserService platformUserService;
+    private PlatformUserRepository platformUserRepository;
+    private WalletRepository walletRepository;
+    private CompanyRepo companyRepository;
+    private ApiService apiService;
+    private PasswordEncoder passwordEncoder;
 
     private UserServiceImpl userService;
     private UserLookupService userLookupService;
@@ -30,7 +44,21 @@ public class UserServiceTest {
     public void setup() {
         userRepository = mock(UserRepository.class);
         platformUserService = mock(PlatformUserService.class);
-        userService = new UserServiceImpl(userRepository);
+        platformUserRepository = mock(PlatformUserRepository.class);
+        walletRepository = mock(WalletRepository.class);
+        companyRepository = mock(CompanyRepo.class);
+        apiService = mock(ApiService.class);
+        passwordEncoder = mock(PasswordEncoder.class);
+
+        userService = new UserServiceImpl(
+                userRepository,
+                platformUserRepository,
+                walletRepository,
+                companyRepository,
+                apiService,
+                passwordEncoder
+        );
+
         userLookupService = new UserLookupService(platformUserService);
         identityMapper = new CompanyIdentityMapperImpl();
     }
@@ -252,4 +280,86 @@ public class UserServiceTest {
         assertNull(mapped.getId());
     }
 
+    @Test
+    public void activateWallet_invalidCredentials_throwsSecurityException() {
+        when(apiService.validateApiKey(anyString(), anyString())).thenThrow(new SecurityException("Invalid API credentials"));
+
+        WalletActivationRequest request = new WalletActivationRequest();
+        assertThrows(SecurityException.class, () -> userService.activateWallet("apiKey", "apiSecret", request));
+    }
+
+    @Test
+    public void activateWallet_emailAlreadyRegistered_throwsIllegalArgumentException() {
+        UUID companyId = UUID.randomUUID();
+        when(apiService.validateApiKey(anyString(), anyString())).thenReturn(companyId);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
+        when(companyRepository.findById(companyId)).thenReturn(Optional.of(new Company()));
+
+        WalletActivationRequest request = new WalletActivationRequest();
+        request.setEmail("test@test.com");
+
+        assertThrows(IllegalArgumentException.class, () -> userService.activateWallet("apiKey", "apiSecret", request));
+    }
+
+    @Test
+    public void activateWallet_validRequest_createsAndSavesUserPlatformUserAndWallet() {
+        UUID companyId = UUID.randomUUID();
+        Company company = new Company();
+        company.setId(companyId);
+        User user = new User();
+        user.setId(UUID.randomUUID());
+
+        when(apiService.validateApiKey(anyString(), anyString())).thenReturn(companyId);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(platformUserRepository.save(any(PlatformUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(walletRepository.save(any(Wallet.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(companyRepository.findById(companyId)).thenReturn(Optional.of(company));
+
+
+        WalletActivationRequest request = new WalletActivationRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("password");
+        request.setPlatformUserId("platformUserId");
+        request.setFirstName("firstName");
+        request.setLastName("lastName");
+
+        userService.activateWallet("apiKey", "apiSecret", request);
+
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(platformUserRepository, times(1)).save(any(PlatformUser.class));
+        verify(walletRepository, times(1)).save(any(Wallet.class));
+    }
+
+    @Test
+    public void activateWallet_validRequest_returnsCorrectResponse() {
+        UUID companyId = UUID.randomUUID();
+        Company company = new Company();
+        company.setId(companyId);
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        PlatformUser platformUser = new PlatformUser();
+        platformUser.setId(UUID.randomUUID());
+
+        when(apiService.validateApiKey(anyString(), anyString())).thenReturn(companyId);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(platformUserRepository.save(any(PlatformUser.class))).thenReturn(platformUser);
+        when(walletRepository.save(any(Wallet.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(companyRepository.findById(companyId)).thenReturn(Optional.of(company));
+
+
+        WalletActivationRequest request = new WalletActivationRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("password");
+        request.setPlatformUserId("platformUserId");
+        request.setFirstName("firstName");
+        request.setLastName("lastName");
+
+        WalletActivationResponse response = userService.activateWallet("apiKey", "apiSecret", request);
+
+        assertEquals(String.valueOf(user.getId()), response.getUserId());
+        assertEquals(String.valueOf(platformUser.getId()), response.getPlatformUserId());
+        assertEquals("Wallet activated successfully", response.getMessage());
+    }
 }

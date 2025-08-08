@@ -50,6 +50,9 @@ public class Transaction {
 
     private Instant timestamp;
 
+    @Column(name = "external_wallet_address", length = 255)
+    private String externalWalletAddress;
+
     private boolean onChain;
     private String suiTxHash;
     private BigDecimal gasFee;

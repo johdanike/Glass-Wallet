@@ -24,29 +24,47 @@ public class WalletResolverImpl implements WalletResolver {
 
     @Override
     public Optional<Wallet> resolveWallet(String identifier, WalletCurrency currencyType) {
-        if (identifier == null || identifier.trim().isEmpty()) return Optional.empty();
+        if (isBlank(identifier)) return Optional.empty();
 
-        // 1. Try account number (FIAT)
-        Optional<Wallet> wallet = walletRepository.findByAccountNumberAndCurrencyType(identifier, currencyType);
+        Optional<Wallet> wallet = findByAccountNumberOrWalletAddress(identifier, currencyType);
         if (wallet.isPresent()) return wallet;
 
-        // 2. Try wallet address (CRYPTO)
-        wallet = walletRepository.findByWalletAddressAndCurrencyType(identifier, currencyType);
+        wallet = findByUserDetails(identifier, currencyType);
         if (wallet.isPresent()) return wallet;
 
-        // 3. Try user email/username
-        Optional<User> user = userRepository.findByEmailOrUsernameOrAccountNumber(identifier, identifier, identifier);
-        if (user.isPresent()) {
-            wallet = walletRepository.findByUserAndCurrencyType(user.get(), currencyType);
-            if (wallet.isPresent()) return wallet;
-        }
-
-        // 4. Try phone number → account number
-        if (identifier.matches("^\\+?[1-9]\\d{7,14}$")) {
+        if (isPhoneNumber(identifier)) {
             String accountNumber = WalletUtils.generateAccountNumberFromPhoneNumber(identifier);
             return walletRepository.findByAccountNumberAndCurrencyType(accountNumber, currencyType);
         }
 
         return Optional.empty();
     }
+
+    // Helper Method 1
+    private boolean isBlank(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
+    // Helper Method 2
+    private Optional<Wallet> findByAccountNumberOrWalletAddress(String identifier, WalletCurrency currencyType) {
+        Optional<Wallet> wallet = walletRepository.findByAccountNumberAndCurrencyType(identifier, currencyType);
+        if (wallet.isPresent()) return wallet;
+
+        return walletRepository.findByWalletAddressAndCurrencyType(identifier, currencyType);
+    }
+
+    // Helper Method 3
+    private Optional<Wallet> findByUserDetails(String identifier, WalletCurrency currencyType) {
+        Optional<User> user = userRepository.findByEmailOrUsernameOrAccountNumber(identifier, identifier, identifier);
+        if (user.isPresent()) {
+            return walletRepository.findByUserAndCurrencyType(user.get(), currencyType);
+        }
+        return Optional.empty();
+    }
+
+    // Helper Method 4 (optional)
+    private boolean isPhoneNumber(String identifier) {
+        return identifier.matches("^\\+?[1-9]\\d{7,14}$");
+    }
+
 }

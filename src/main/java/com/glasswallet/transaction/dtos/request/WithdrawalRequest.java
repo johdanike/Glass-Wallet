@@ -12,11 +12,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WithdrawalRequest {
-    private User userId;
     private String senderId;
     private BigDecimal amount;
     private String currency;
     private String receiverId;
     private String companyId;
     private String reference;
+    private String externalWalletAddress;
+
 }

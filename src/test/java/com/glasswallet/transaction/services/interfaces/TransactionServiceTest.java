@@ -82,7 +82,7 @@ public class TransactionServiceTest {
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
-        DepositResponse response = transactionService.processDeposit(request);
+        DepositResponse response = transactionService.processDepositForSui(request);
         assertEquals("Deposit successful.", response.getMessage());
         assertEquals(BigDecimal.valueOf(100), user.getBalanceSui());
         verify(walletRepository).save(any(Wallet.class));
@@ -92,12 +92,12 @@ public class TransactionServiceTest {
     void processDeposit_negativeAmount_throwsException() {
         DepositRequest request = new DepositRequest();
         request.setAmount(BigDecimal.valueOf(-100));
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
     void processDeposit_nullRequest_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(null));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(null));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class TransactionServiceTest {
         request.setAmount(BigDecimal.ZERO);
         request.setCurrency(WalletCurrency.SUI);
         request.setReceiverId(receiverId);
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TransactionServiceTest {
         request.setAmount(BigDecimal.valueOf(100));
         request.setCurrency(null);
         request.setReceiverId(receiverId);
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TransactionServiceTest {
         when(ledgerService.logDeposit(any())).thenReturn(LedgerEntry.builder().reference(UUID.randomUUID().toString()).build());
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
 
-        DepositResponse response = transactionService.processDeposit(request);
+        DepositResponse response = transactionService.processDepositForSui(request);
         assertEquals("Deposit successful.", response.getMessage());
     }
 
@@ -150,7 +150,7 @@ public class TransactionServiceTest {
         request.setReceiverId(receiverId);
         when(platformUserRepository.findByIdWithPessimisticLock(receiverId)).thenReturn(Optional.empty());
         when(userRepository.findById(receiverId)).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class TransactionServiceTest {
         request.setAmount(BigDecimal.valueOf(100));
         request.setCurrency(null);
         request.setReceiverId(receiverId);
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class TransactionServiceTest {
         request.setAmount(BigDecimal.valueOf(100));
         request.setCurrency(WalletCurrency.SUI);
         request.setReceiverId(null);
-        assertThrows(IllegalArgumentException.class, () -> transactionService.processDeposit(request));
+        assertThrows(IllegalArgumentException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class TransactionServiceTest {
         user.setBalanceSui(BigDecimal.ZERO);
         when(platformUserRepository.findByIdWithPessimisticLock(receiverId)).thenReturn(Optional.of(user));
         when(ledgerService.logDeposit(any())).thenThrow(new RuntimeException("Ledger error"));
-        assertThrows(RuntimeException.class, () -> transactionService.processDeposit(request));
+        assertThrows(RuntimeException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -201,7 +201,7 @@ public class TransactionServiceTest {
         when(platformUserRepository.findByIdWithPessimisticLock(receiverId)).thenReturn(Optional.of(user));
         when(ledgerService.logDeposit(any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenThrow(new RuntimeException("Move error"));
-        assertThrows(RuntimeException.class, () -> transactionService.processDeposit(request));
+        assertThrows(RuntimeException.class, () -> transactionService.processDepositForSui(request));
     }
 
     @Test
@@ -220,7 +220,7 @@ public class TransactionServiceTest {
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
-        DepositResponse response = transactionService.processDeposit(request);
+        DepositResponse response = transactionService.processDepositForSui(request);
         assertEquals("Deposit successful.", response.getMessage());
         assertEquals(BigDecimal.valueOf(1_000_000), user.getBalanceSui());
         verify(walletRepository).save(any(Wallet.class));
@@ -242,7 +242,7 @@ public class TransactionServiceTest {
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
-        DepositResponse response = transactionService.processDeposit(request);
+        DepositResponse response = transactionService.processDepositForSui(request);
         assertEquals("Deposit successful.", response.getMessage());
         assertEquals(BigDecimal.valueOf(123.45), user.getBalanceSui());
         verify(walletRepository).save(any(Wallet.class));
@@ -275,7 +275,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -353,7 +353,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -375,7 +375,7 @@ public class TransactionServiceTest {
         user.setBalanceFiat(BigDecimal.valueOf(100));
         LedgerEntry ledger = LedgerEntry.builder().reference(UUID.randomUUID().toString()).senderId(senderId.toString()).build();
         when(platformUserRepository.findByIdWithPessimisticLock(senderId)).thenReturn(Optional.of(user));
-        when(ledgerService.logWithdrawal(any())).thenReturn(ledger);
+        when(ledgerService.logWithdrawal(any(), any(), any(), any())).thenReturn(ledger);
         when(moveServiceClient.logOnChain(any())).thenReturn(new SuiResponse());
         when(transactionRepository.save(any())).thenReturn(new Transaction());
 
@@ -690,10 +690,10 @@ public class TransactionServiceTest {
     // Assert: Verify the results
     assertEquals("Bulk disbursement successful.", response.getMessage());
     verify(transactionRepository, times(2)).save(any(Transaction.class));
-    assertEquals(BigDecimal.ZERO, sender.getBalanceSui()); // Sender SUI balance deducted
-    assertEquals(BigDecimal.ZERO, sender.getBalanceFiat()); // Sender NGN balance deducted
-    assertEquals(BigDecimal.valueOf(100), receiver1.getBalanceSui()); // Receiver1 SUI balance updated
-    assertEquals(BigDecimal.valueOf(50), receiver2.getBalanceFiat()); // Receiver2 NGN balance updated
+    assertEquals(BigDecimal.ZERO, sender.getBalanceSui());
+    assertEquals(BigDecimal.ZERO, sender.getBalanceFiat());
+    assertEquals(BigDecimal.valueOf(100), receiver1.getBalanceSui());
+    assertEquals(BigDecimal.valueOf(50), receiver2.getBalanceFiat());
 }
 
     @Test
